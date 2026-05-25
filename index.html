@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Tamu LPSE | Sistem Pencatatan Kunjungan Online</title>
+    <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js CDN for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        lpse: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            200: '#bae2fd',
+                            300: '#7cc8fc',
+                            400: '#38aaf8',
+                            500: '#0e8fe5',
+                            600: '#0271c2',
+                            700: '#035ba1',
+                            800: '#074e85',
+                            900: '#0c416e',
+                            950: '#082949',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col antialiased">
+
+    <!-- TOP NOTIFICATION BANNER -->
+    <div class="bg-gradient-to-r from-lpse-900 to-indigo-900 text-white py-2 px-4 text-center text-xs font-semibold tracking-wide flex items-center justify-center gap-2">
+        <span class="flex h-2 w-2 relative">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        </span>
+        LAYANAN DIGITAL LPSE - PENCATATAN KUNJUNGAN FASILITAS SECARA REAL-TIME
+    </div>
+
+    <!-- MAIN APP HEADER -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm transition-all duration-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Brand Identity -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('form-page')">
+                    <div class="h-12 w-12 rounded-xl bg-gradient-to-tr from-lpse-700 to-lpse-500 flex items-center justify-center text-white shadow-lg shadow-lpse-500/20">
+                        <i data-lucide="shield-check" class="h-6 w-6"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-extrabold text-xl tracking-tight text-slate-900">E-TAMU</span>
+                            <span class="bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">LPSE</span>
+                        </div>
+                        <p class="text-xs text-slate-500 font-medium">Layanan Pengadaan Secara Elektronik</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="flex items-center gap-2">
+                    <button id="nav-btn-form" onclick="switchTab('form-page')" class="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold bg-lpse-600 text-white shadow-md shadow-lpse-600/10 hover:bg-lpse-700 transition">
+                        <i data-lucide="file-text" class="h-4 w-4"></i>
+                        <span>Isi Buku Tamu</span>
+                    </button>
+                    <button id="nav-btn-admin" onclick="switchTab('admin-auth-page')" class="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:text-lpse-700 hover:bg-slate-50 border border-transparent hover:border-slate-200 transition">
+                        <i data-lucide="users" class="h-4 w-4"></i>
+                        <span>Panel Petugas</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN BODY CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- ========================================== -->
+        <!-- ========================================== -->
+        <div id="form-page" class="space-y-6">
+            <!-- Hero banner text for Form -->
+            <div class="text-center max-w-2xl mx-auto mb-8">
+                <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight sm:text-4xl">Selamat Datang di Fasilitas LPSE</h1>
+                <p class="mt-3 text-lg text-slate-600">Sesuai dengan standar pelayanan, mohon luangkan waktu 1-2 menit untuk mengisi formulir kehadiran kunjungan Anda.</p>
+            </div>
+
+            <!-- Form Multi-Step Card -->
+            <div class="max-w-3xl mx-auto bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden">
+                <!-- Step Indicator Header -->
+                <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Progres Pengisian:</span>
+                        <span id="step-badge" class="bg-lpse-100 text-lpse-800 text-xs font-bold px-2.5 py-1 rounded-full">Langkah 1 dari 3</span>
+                    </div>
+                    <!-- Indicator dots -->
+                    <div class="flex gap-2">
+                        <span id="indicator-1" class="h-2 w-8 rounded-full bg-lpse-600 transition-all duration-300"></span>
+                        <span id="indicator-2" class="h-2 w-2 rounded-full bg-slate-200 transition-all duration-300"></span>
+                        <span id="indicator-3" class="h-2 w-2 rounded-full bg-slate-200 transition-all duration-300"></span>
+                    </div>
+                </div>
+
+                <!-- FORM BODY -->
+                <form id="visitation-form" onsubmit="handleFormSubmit(event)" class="p-6 sm:p-8 space-y-6">
+                    
+                    <!-- STEP 1: IDENTITAS PENGUNJUNG -->
+                    <div id="step-section-1" class="space-y-6">
+                        <div class="border-b border-slate-100 pb-3">
+                            <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                                <i data-lucide="user" class="h-5 w-5 text-lpse-600"></i> Identitas Diri & Instansi
+                            </h2>
+                            <p class="text-sm text-slate-500">Isikan data diri Anda dengan benar untuk keperluan administrasi dan validasi.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Nama Lengkap -->
+                            <div class="space-y-1.5">
+                                <label for="visitor-name" class="block text-sm font-semibold text-slate-700">Nama Lengkap Pengunjung <span class="text-red-500">*</span></label>
+                                <input type="text" id="visitor-name" required placeholder="Contoh: Budi Santoso" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-lpse-500 focus:border-lpse-500 transition-all bg-slate-50/50 hover:bg-white text-sm outline-none">
+                            </div>
+
+                            <!-- No Kontak/WA -->
+                            <div class="space-y-1.5">
+                                <label for="visitor-phone" class="block text-sm font-semibold text-slate-700">Nomor WhatsApp Aktif <span class="text-red-500">*</span></label>
+                                <input type="tel" id="visitor-phone" required placeholder="Contoh: 081234567890" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-lpse-500 focus:border-lpse-500 transition-all bg-slate-50/50 hover:bg-white text-sm outline-none">
+                            </div>
+
+                            <!-- Email -->
+                            <div class="space-y-1.5">
+                                <label for="visitor-email" class="block text-sm font-semibold text-slate-700">Alamat Email <span class="text-slate-400 font-normal">(Opsional)</span></label>
+                                <input type="email" id="visitor-email" placeholder="nama@email.com" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-lpse-500 focus:border-lpse-500 transition-all bg-slate-50/50 hover:bg-white text-sm outline-none">
+                            </div>
+
+                            <!-- Kategori Pengunjung -->
+                            <div class="space-y-1.5">
+                                <label for="visitor-category" class="block text-sm font-semibold text-slate-700">Kategori Pengunjung <span class="text-red-500">*</span></label>
+                                <select id="visitor-category" required onchange="handleCategoryChange()" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-lpse-500 focus:border-lpse-500 transition-all bg-slate-50/50 hover:bg-white text-sm outline-none">
+                                    <option value="" disabled selected>-- Pilih Kategori --</option>
+                                    <option value="Penyedia Jasa">Penyedia Jasa (Pelaku Usaha/Vendor)</option>
+                                    <option value="Internal Pemerintah">Internal Pemerintah Daerah (OPD/Instansi)</option>
+                                    <option value="Masyarakat Umum">Masyarakat Umum</option>
+                                    <option value="Lainnya">Lainnya / Lain-lain</option>
+                                </select>
+                            </div>
+
+                            <!-- Nama Instansi/Perusahaan -->
+                            <div class="space-y-1.5 md:col-span-2">
+                                <label id="label-instansi" for="visitor-organization" class="block text-sm font-semibold text-slate-700">Nama Instansi / Perusahaan <span class="text-red-500">*</span></label>
+                                <input type="text" id="visitor-organization" required placeholder="Contoh: PT. Sumber Makmur / Dinas Pekerjaan Umum" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-lpse-500 focus:border-lpse-500 transition-all bg-slate-50/50 hover:bg-white text-sm outline-none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: MAKSUD DAN TUJUAN KUNJUNGAN -->
+                    <div id="step-section-2" class="hidden space-y-6">
+                        <div class="border-b border-slate-100 pb-3">
+                            <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                                <i data-lucide="help-circle" class="h-5 w-5 text-lpse-600"></i> Maksud, Tujuan & Metode
+                            </h2>
+                            <p class="text-sm text-slate-500">Sebutkan agenda serta jenis layanan yang Anda butuhkan dalam kunjungan ini.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Tujuan Utama -->
+                            <div class="space-y-1.5 md:col-span-2">
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">Tujuan Utama Kunjungan <span class="text-red-500">*</span></label>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <label class="relative flex items-start p-4 border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition select-none">
+                                        <div class="flex items-center h-5">
+                                            <input type="radio" name="visit-purpose" value="Konsultasi SPSE" required class="h-4 w-4 text-lpse-600 focus:ring-lpse-500 border-slate-300">
+                                        </div>
+                                        <div class="ml-3 text-sm">
+                                            <span class="font-bold text-slate-800 block">Konsultasi SPSE</span>
+                                            <span class="text-slate-500 text-xs">Pendampingan penggunaan aplikasi SPSE</span>
+                                        </div>
+                                    </label>
+
+                                    <label class="relative flex items-start p-4 border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition select-none">
+                                        <div class="flex items-center h-5">
+                                            <input type="radio" name="visit-purpose" value="Pendampingan SiRUP" class="h-4 w-4 text-lpse-600 focus:ring-lpse-500 border-slate-300">
+                                        </div>
+                                        <div class="ml-3 text-sm">
+                                            <span class="font-bold text-slate-800 block">Pendampingan SiRUP</span>
+                                            <span class="text-slate-500 text-xs">Asistensi penginputan Rencana Pengadaan</span>
+                                        </div>
+                                    </label>
+
+                                    <label class="relative flex items-start p-4 border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition select-none">
+                                        <div class="flex items-center h-5">
+                                            <input type="radio" name="visit-purpose" value="Registrasi & Verifikasi Berkas" class="h-4 w-4 text-lpse-600 focus:ring-lpse-500 border-slate-300">
+                                        </div>
+                                        <div class="ml-3 text-sm">
+                                            <span class="font-bold text-slate-800 block">Registrasi & Verifikasi</span>
+                                            <span class="text-slate-500 text-xs">Pembuatan akun baru / Verifikasi berkas fisik</span>
+                                        </div>
+                                    </label>
+
+                                    <label class="relative flex items-start p-4 border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition select-none">
+                                        <div class="flex items-center h-5">
+                                            <input type="radio" name="visit-purpose" value="Penggunaan Bidding Room" class="h-4 w-4 text-lpse-600 focus:ring-lpse-500 border-slate-300">
+                                        </div>
+                                        <div class="ml-3 text-sm">
+                                            <span class="font-bold text-slate-800 block">Bidding Room & Internet</span>
+                                            <span class="text-slate-500 text-xs">Memakai fasilitas komputer & internet LPSE</span>
+                                        </div>
+                                    </label>
+
+                                    <label class="relative flex items-start p-4 border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition select-none">
+                                        <div class="flex items-center h-5">
+                                            <input type="radio" name="visit-purpose" value="Penanganan Kendala Teknis" class="h-4 w-4 text-lpse-600 focus:ring-lpse-500 border-slate-300">
+                                        </div>
+                                        <div class="ml-3 text-sm">
+                                            <span class="font-bold text-slate-800 block">Kendala Teknis (Troubleshoot)</span>
+                                            <span class="text-slate-500 text-xs">Error sistem, kunci pengaman, sertifikat digital</span>
+                                        </div>
+                                    </label>
+
+                                    <label class="relative flex items-start p-4 border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition select-none">
+                                        <div class="flex items-center h-5">
+                                            <input type="radio" name="visit-purpose" value="Lainnya" class="h-4 w-4 text-lpse-600 focus:ring-lpse-500 border-slate-300">
+                                        </div>
+                                        <div class="ml-3 text-sm">
+                                            <span class="font-bold text-slate-800 block">Keperluan Lainnya</span>
+                                            <span class="text-slate-500 text-xs">Tujuan yang tidak tertulis di atas</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Detail Deskripsi -->
+                            <div class="space-y-1.5 md:col-span-2">
+                                <label for="visit-details" class="block text-sm font-semibold text-slate-700">Detail Masalah / Informasi Tambahan <span class="text-slate-400 font-normal">(Opsional)</span></label>
+                                <textarea id="visit-details" rows="3" placeholder="Jelaskan secara singkat rincian kendala atau maksud kunjungan Anda..." class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-lpse-500 focus:border-lpse-500 transition-all bg-slate-50/50 hover:bg-white text-sm outline-none resize-none"></textarea>
+                            </div>
+
+                            <!-- Metode Layanan -->
+                            <div class="space-y-1.5">
+                                <label for="visit-method" class="block text-sm font-semibold text-slate-700">Metode Pelayanan <span class="text-red-500">*</span></label>
+                                <select id="visit-method" required class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-lpse-500 focus:border-lpse-500 transition-all bg-slate-50/50 hover:bg-white text-sm outline-none">
+                                    <option value="Tatap Muka" selected>Tatap Muka (Datang ke Kantor LPSE)</option>
+                                    <option value="Online / Remote">Online / Bantuan Jarak Jauh (WhatsApp/AnyDesk)</option>
+                                </select>
+                            </div>
+
+                            <!-- Petugas / Fasilitator -->
+                            <div class="space-y-1.5">
+                                <label for="assigned-officer" class="block text-sm font-semibold text-slate-700">Petugas / Helpdesk LPSE <span class="text-red-500">*</span></label>
+                                <select id="assigned-officer" required class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-lpse-500 focus:border-lpse-500 transition-all bg-slate-50/50 hover:bg-white text-sm outline-none">
+                                    <option value="" disabled selected>-- Pilih Petugas / Helpdesk --</option>
+                                    <option value="Suryo Haryono (Koordinator)">Suryo Haryono (Koordinator)</option>
+                                    <option value="Rina Amalia (Helpdesk SPSE)">Rina Amalia (Helpdesk SPSE)</option>
+                                    <option value="Ahmad Dhani (Asisten Teknis)">Ahmad Dhani (Asisten Teknis)</option>
+                                    <option value="Nur Haliza (Verifikator Berkas)">Nur Haliza (Verifikator Berkas)</option>
+                                    <option value="Petugas Siap Sedia (Siapa saja)">Petugas Siap Sedia (Siapa saja)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: KEPUASAN LAYANAN & SUBMIT -->
+                    <div id="step-section-3" class="hidden space-y-6">
+                        <div class="border-b border-slate-100 pb-3">
+                            <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                                <i data-lucide="award" class="h-5 w-5 text-lpse-600"></i> Penilaian Layanan (IKM)
+                            </h2>
+                            <p class="text-sm text-slate-500">Bantu kami meningkatkan kualitas layanan dengan memberikan rating kepuasan Anda saat ini.</p>
+                        </div>
+
+                        <!-- Rating / Satisfaction Scale -->
+                        <div class="space-y-4">
+                            <label class="block text-sm font-semibold text-slate-700 text-center mb-1">Seberapa Puas Anda dengan Pelayanan Petugas LPSE Hari Ini? <span class="text-red-500">*</span></label>
+                            
+                            <div class="flex justify-center items-center gap-3 sm:gap-6 py-4">
+                                <!-- Option 1 -->
+                                <label class="flex flex-col items-center cursor-pointer group">
+                                    <input type="radio" name="satisfaction-rating" value="1" required class="sr-only peer">
+                                    <div class="w-14 h-14 rounded-full bg-slate-100 text-slate-400 border border-slate-200 flex flex-col items-center justify-center font-bold text-xl peer-checked:bg-red-50 peer-checked:text-red-600 peer-checked:border-red-400 group-hover:scale-105 transition duration-150">
+                                        😞
+                                    </div>
+                                    <span class="text-[10px] font-bold text-slate-500 mt-2 peer-checked:text-red-600 group-hover:text-slate-800">Sangat Kecewa</span>
+                                </label>
+
+                                <!-- Option 2 -->
+                                <label class="flex flex-col items-center cursor-pointer group">
+                                    <input type="radio" name="satisfaction-rating" value="2" class="sr-only peer">
+                                    <div class="w-14 h-14 rounded-full bg-slate-100 text-slate-400 border border-slate-200 flex flex-col items-center justify-center font-bold text-xl peer-checked:bg-orange-50 peer-checked:text-orange-600 peer-checked:border-orange-400 group-hover:scale-105 transition duration-150">
+                                        😐
+                                    </div>
+                                    <span class="text-[10px] font-bold text-slate-500 mt-2 peer-checked:text-orange-600 group-hover:text-slate-800">Kurang Puas</span>
+                                </label>
+
+                                <!-- Option 3 -->
+                                <label class="flex flex-col items-center cursor-pointer group">
+                                    <input type="radio" name="satisfaction-rating" value="3" class="sr-only peer">
+                                    <div class="w-14 h-14 rounded-full bg-slate-100 text-slate-400 border border-slate-200 flex flex-col items-center justify-center font-bold text-xl peer-checked:bg-amber-50 peer-checked:text-amber-600 peer-checked:border-amber-400 group-hover:scale-105 transition duration-150">
+                                        🙂
+                                    </div>
+                                    <span class="text-[10px] font-bold text-slate-500 mt-2 peer-checked:text-amber-600 group-hover:text-slate-800">Biasa Saja</span>
+                                </label>
+
+                                <!-- Option 4 -->
+                                <label class="flex flex-col items-center cursor-pointer group">
+                                    <input type="radio" name="satisfaction-rating" value="4" class="sr-only peer">
+                                    <div class="w-14 h-14 rounded-full bg-slate-100 text-slate-400 border border-slate-200 flex flex-col items-center justify-center font-bold text-xl peer-checked:bg-teal-50 peer-checked:text-teal-600 peer-checked:border-teal-400 group-hover:scale-105 transition duration-150">
+                                        😊
+                                    </div>
+                                    <span class="text-[10px] font-bold text-slate-500 mt-2 peer-checked:text-teal-600 group-hover:text-slate-800">Puas</span>
+                                </label>
+
+                                <!-- Option 5 -->
+                                <label class="flex flex-col items-center cursor-pointer group">
+                                    <input type="radio" name="satisfaction-rating" value="5" class="sr-only peer">
+                                    <div class="w-14 h-14 rounded-full bg-slate-100 text-slate-400 border border-slate-200 flex flex-col items-center justify-center font-bold text-xl peer-checked:bg-emerald-50 peer-checked:text-emerald-600 peer-checked:border-emerald-400 group-hover:scale-105 transition duration-150">
+                                        🤩
+                                    </div>
+                                    <span class="text-[10px] font-bold text-slate-500 mt-2 peer-checked:text-emerald-600 group-hover:text-slate-800">Sangat Puas</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Saran & Masukan -->
+                        <div class="space-y-1.5">
+                            <label for="visitor-feedback" class="block text-sm font-semibold text-slate-700">Kritik, Saran, atau Masukan untuk LPSE <span class="text-slate-400 font-normal">(Opsional)</span></label>
+                            <textarea id="visitor-feedback" rows="3" placeholder="Saran Anda sangat berarti untuk kemajuan pelayanan kami..." class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-lpse-500 focus:border-lpse-500 transition-all bg-slate-50/50 hover:bg-white text-sm outline-none resize-none"></textarea>
+                        </div>
+
+                        <!-- Pernyataan Persetujuan -->
+                        <label class="flex items-start p-4 bg-slate-50 rounded-xl border border-slate-200 cursor-pointer select-none">
+                            <div class="flex items-center h-5 mt-0.5">
+                                <input type="checkbox" required class="h-4 w-4 rounded text-lpse-600 border-slate-300 focus:ring-lpse-500">
+                            </div>
+                            <div class="ml-3 text-xs leading-relaxed text-slate-600">
+                                Saya menyatakan bahwa seluruh informasi di atas diisi dengan jujur dan benar demi kelancaran administrasi pendaftaran kunjungan LPSE.
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- FOOTER ACTIONS FOR STEP FORM -->
+                    <div class="pt-6 border-t border-slate-100 flex items-center justify-between">
+                        <!-- Back button -->
+                        <button type="button" id="prev-btn" onclick="navigateStep(-1)" class="invisible flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 border border-slate-200 transition">
+                            <i data-lucide="arrow-left" class="h-4 w-4"></i>
+                            <span>Kembali</span>
+                        </button>
+
+                        <!-- Next/Submit Button -->
+                        <button type="button" id="next-btn" onclick="navigateStep(1)" class="flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold bg-lpse-600 hover:bg-lpse-700 text-white shadow-lg shadow-lpse-600/10 transition">
+                            <span>Lanjut</span>
+                            <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- ========================================== -->
+        <!-- SCREEN 1.1: DIGITAL TICKET CONFIRMATION -->
+        <div id="ticket-page" class="hidden max-w-xl mx-auto space-y-6">
+            <div class="bg-white border border-slate-200 rounded-3xl shadow-xl overflow-hidden relative">
+                <!-- Ticket Notch Header Visual -->
+                <div class="bg-gradient-to-r from-lpse-700 to-indigo-800 text-white p-6 text-center relative">
+                    <div class="absolute -bottom-3 left-0 right-0 flex justify-between px-6">
+                        <span class="w-6 h-6 rounded-full bg-slate-50 -ml-9"></span>
+                        <span class="w-6 h-6 rounded-full bg-slate-50 -mr-9"></span>
+                    </div>
+                    <div class="mx-auto w-12 h-12 rounded-full bg-white/10 backdrop-blur flex items-center justify-center mb-2">
+                        <i data-lucide="check-circle" class="h-6 w-6 text-emerald-400"></i>
+                    </div>
+                    <h2 class="text-xl font-extrabold tracking-wide">Pencatatan Berhasil</h2>
+                    <p class="text-xs text-slate-200 mt-1">Terima kasih telah melakukan pendaftaran kunjungan online</p>
+                </div>
+
+                <!-- Ticket Content body -->
+                <div class="p-6 sm:p-8 space-y-6 bg-white relative">
+                    <!-- Ticket Number Box -->
+                    <div class="bg-slate-50 border border-slate-150 rounded-2xl p-5 text-center space-y-1">
+                        <span class="text-xs font-bold text-slate-500 tracking-widest uppercase">Nomor Kunjungan Anda</span>
+                        <h3 id="ticket-number" class="text-3xl font-extrabold text-lpse-700 tracking-wider">LPSE-2026-001</h3>
+                        <p class="text-[11px] text-slate-400">Simpan atau tunjukkan nomor ini ke petugas</p>
+                    </div>
+
+                    <!-- Ticket Details Grid -->
+                    <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-sm border-t border-b border-dashed border-slate-200 py-6">
+                        <div>
+                            <span class="text-xs text-slate-400 block">Nama Pengunjung</span>
+                            <span id="ticket-name" class="font-bold text-slate-800">Nama Lengkap</span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 block">Instansi / Perusahaan</span>
+                            <span id="ticket-org" class="font-bold text-slate-800">CV. Makmur Utama</span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 block">Tujuan Layanan</span>
+                            <span id="ticket-purpose" class="font-bold text-lpse-600">Konsultasi SPSE</span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 block">Petugas Penanggung</span>
+                            <span id="ticket-officer" class="font-bold text-slate-800">Petugas LPSE</span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 block">Tanggal & Waktu</span>
+                            <span id="ticket-datetime" class="font-bold text-slate-800">26 Mei 2026, 10:00 WIB</span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 block">Metode Layanan</span>
+                            <span id="ticket-method" class="font-bold text-slate-800">Tatap Muka</span>
+                        </div>
+                    </div>
+
+                    <!-- QR Code Placeholder -->
+                    <div class="flex flex-col items-center justify-center space-y-2 py-2">
+                        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200">
+                            <!-- Simulated SVG QR Code -->
+                            <svg class="w-32 h-32 text-slate-800" viewBox="0 0 100 100" fill="currentColor">
+                                <rect x="0" y="0" width="100" height="100" fill="#fff"/>
+                                <rect x="5" y="5" width="25" height="25" fill="#0f172a"/>
+                                <rect x="10" y="10" width="15" height="15" fill="#fff"/>
+                                <rect x="70" y="5" width="25" height="25" fill="#0f172a"/>
+                                <rect x="75" y="10" width="15" height="15" fill="#fff"/>
+                                <rect x="5" y="70" width="25" height="25" fill="#0f172a"/>
+                                <rect x="10" y="75" width="15" height="15" fill="#fff"/>
+                                <!-- Random QR-like blocks -->
+                                <rect x="35" y="5" width="10" height="10"/>
+                                <rect x="55" y="15" width="10" height="15"/>
+                                <rect x="35" y="25" width="25" height="10"/>
+                                <rect x="5" y="35" width="15" height="10"/>
+                                <rect x="25" y="35" width="20" height="20"/>
+                                <rect x="55" y="45" width="15" height="10"/>
+                                <rect x="75" y="35" width="20" height="20"/>
+                                <rect x="5" y="55" width="15" height="10"/>
+                                <rect x="35" y="65" width="30" height="10"/>
+                                <rect x="75" y="65" width="15" height="25"/>
+                                <rect x="35" y="80" width="15" height="15"/>
+                                <rect x="55" y="80" width="15" height="10"/>
+                            </svg>
+                        </div>
+                        <span class="text-xs text-slate-400 italic">Pindai QR Code di loket pelayanan untuk check-in cepat</span>
+                    </div>
+                </div>
+
+                <!-- Footer of ticket card -->
+                <div class="bg-slate-50 border-t border-slate-200 px-6 py-4 flex flex-col sm:flex-row gap-3">
+                    <button onclick="downloadTicketSimulated()" class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold bg-lpse-600 hover:bg-lpse-700 text-white transition">
+                        <i data-lucide="download" class="h-4 w-4"></i>
+                        <span>Unduh Bukti PDF</span>
+                    </button>
+                    <button onclick="resetAndFillAgain()" class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 transition">
+                        <i data-lucide="plus-circle" class="h-4 w-4"></i>
+                        <span>Isi Form Baru</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- ========================================== -->
+        <!-- SCREEN 2: ADMIN AUTHENTICATION (GATE) -->
+        <div id="admin-auth-page" class="hidden max-w-md mx-auto space-y-6 py-12">
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-xl p-8 space-y-6">
+                <div class="text-center space-y-2">
+                    <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-600 mx-auto flex items-center justify-center">
+                        <i data-lucide="lock" class="h-6 w-6"></i>
+                    </div>
+                    <h2 class="text-2xl font-extrabold text-slate-900">Masuk Panel Petugas</h2>
+                    <p class="text-sm text-slate-500">Gunakan kata sandi default: <span class="font-bold text-slate-700">admin123</span></p>
+                </div>
+
+                <form onsubmit="handleAdminAuth(event)" class="space-y-4">
+                    <div class="space-y-1.5">
+                        <label for="admin-password" class="block text-sm font-semibold text-slate-700">Kata Sandi Akses</label>
+                        <input type="password" id="admin-password" required placeholder="Masukkan kata sandi..." class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-lpse-500 focus:border-lpse-500 outline-none text-sm transition-all">
+                    </div>
+
+                    <div id="auth-error" class="hidden text-xs text-red-600 font-bold bg-red-50 border border-red-200 p-3 rounded-lg flex items-center gap-2">
+                        <i data-lucide="alert-circle" class="h-4 w-4 flex-shrink-0"></i>
+                        <span>Kata sandi salah! Coba gunakan 'admin123'.</span>
+                    </div>
+
+                    <button type="submit" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold bg-lpse-600 hover:bg-lpse-700 text-white shadow-md transition">
+                        <i data-lucide="log-in" class="h-4 w-4"></i>
+                        <span>Buka Panel Dashboard</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- ========================================== -->
+        <!-- SCREEN 3: ADMIN DASHBOARD (MAIN VIEW) -->
+        <div id="admin-dashboard-page" class="hidden space-y-8">
+            <!-- Header Dashboard with logout -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="layout-dashboard" class="h-6 w-6 text-lpse-600"></i> Portal Kendali & Rekap Data LPSE
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">Kelola dan analisis data pengunjung pelayanan LPSE secara transparan.</p>
+                </div>
+                <div class="flex items-center gap-2 self-stretch sm:self-auto">
+                    <button onclick="logoutAdmin()" class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-red-600 bg-red-50 border border-red-100 hover:bg-red-100 transition">
+                        <i data-lucide="log-out" class="h-4 w-4"></i>
+                        <span>Keluar Sesi</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ANALYTICS HIGHLIGHTS CARDS -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1: Total Tamu -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center justify-between">
+                    <div class="space-y-1">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Total Pengunjung</span>
+                        <h3 id="stat-total-visits" class="text-3xl font-extrabold text-slate-900">0</h3>
+                        <span class="text-xs text-slate-500">Tercatat di sistem lokal</span>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-lpse-100 text-lpse-700 flex items-center justify-center">
+                        <i data-lucide="users" class="h-6 w-6"></i>
+                    </div>
+                </div>
+
+                <!-- Card 2: Hari Ini -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center justify-between">
+                    <div class="space-y-1">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Kunjungan Hari Ini</span>
+                        <h3 id="stat-today-visits" class="text-3xl font-extrabold text-slate-900">0</h3>
+                        <span class="text-xs text-slate-500">Berjalan hari ini</span>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                        <i data-lucide="calendar" class="h-6 w-6"></i>
+                    </div>
+                </div>
+
+                <!-- Card 3: IKM Average -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center justify-between">
+                    <div class="space-y-1">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Rata-rata IKM</span>
+                        <h3 id="stat-avg-rating" class="text-3xl font-extrabold text-slate-900">0.0</h3>
+                        <div class="flex items-center gap-1 text-xs text-amber-500 font-bold" id="stat-avg-stars">
+                            <!-- filled by JS -->
+                        </div>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
+                        <i data-lucide="star" class="h-6 w-6"></i>
+                    </div>
+                </div>
+
+                <!-- Card 4: Tatap Muka ratio -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center justify-between">
+                    <div class="space-y-1">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Kunjungan Offline</span>
+                        <h3 id="stat-offline-visits" class="text-3xl font-extrabold text-slate-900">0</h3>
+                        <span id="stat-offline-percentage" class="text-xs text-slate-500">0% dari total</span>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center">
+                        <i data-lucide="map-pin" class="h-6 w-6"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHARTS SECTION -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Chart 1: Category & Purpose breakdown -->
+                <div class="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+                    <h4 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="bar-chart-2" class="h-5 w-5 text-lpse-600"></i> Tujuan Utama Kunjungan
+                    </h4>
+                    <div class="relative h-64 flex items-center justify-center">
+                        <canvas id="purposeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Category breakdown donut -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+                    <h4 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="pie-chart" class="h-5 w-5 text-lpse-600"></i> Kategori Pengunjung
+                    </h4>
+                    <div class="relative h-64 flex items-center justify-center">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DATA TABLE SECTION -->
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+                <!-- Search & Filters toolbar -->
+                <div class="p-6 border-b border-slate-200 bg-slate-50/50 space-y-4">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <h4 class="text-base font-bold text-slate-900">Daftar Kunjungan Terdaftar</h4>
+                        
+                        <!-- Actions button -->
+                        <div class="flex items-center gap-2 self-stretch md:self-auto">
+                            <button onclick="exportToCSV()" class="flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white transition">
+                                <i data-lucide="file-spreadsheet" class="h-4 w-4"></i>
+                                <span>Ekspor CSV</span>
+                            </button>
+                            <button onclick="generateMockData()" class="flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-slate-200 hover:bg-slate-300 text-slate-700 transition">
+                                <i data-lucide="database" class="h-4 w-4"></i>
+                                <span>Simulasi Data</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filter panel grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        <!-- Search input -->
+                        <div class="relative">
+                            <i data-lucide="search" class="absolute left-3 top-2.5 h-4.5 w-4.5 text-slate-400"></i>
+                            <input type="text" id="filter-search" oninput="applyFilters()" placeholder="Cari nama / instansi..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-lpse-500 focus:border-lpse-500 transition">
+                        </div>
+
+                        <!-- Filter category -->
+                        <div>
+                            <select id="filter-category" onchange="applyFilters()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-lpse-500 transition">
+                                <option value="ALL">Semua Kategori</option>
+                                <option value="Penyedia Jasa">Penyedia Jasa</option>
+                                <option value="Internal Pemerintah">Internal Pemerintah</option>
+                                <option value="Masyarakat Umum">Masyarakat Umum</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
+
+                        <!-- Filter Purpose -->
+                        <div>
+                            <select id="filter-purpose" onchange="applyFilters()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-lpse-500 transition">
+                                <option value="ALL">Semua Tujuan</option>
+                                <option value="Konsultasi SPSE">Konsultasi SPSE</option>
+                                <option value="Pendampingan SiRUP">Pendampingan SiRUP</option>
+                                <option value="Registrasi & Verifikasi Berkas">Registrasi & Verifikasi</option>
+                                <option value="Penggunaan Bidding Room">Bidding Room</option>
+                                <option value="Penanganan Kendala Teknis">Kendala Teknis</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
+
+                        <!-- Filter Rating -->
+                        <div>
+                            <select id="filter-rating" onchange="applyFilters()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-lpse-500 transition">
+                                <option value="ALL">Semua Rating IKM</option>
+                                <option value="5">Sangat Puas (⭐ 5)</option>
+                                <option value="4">Puas (⭐ 4)</option>
+                                <option value="3">Biasa (⭐ 3)</option>
+                                <option value="2">Kurang (⭐ 2)</option>
+                                <option value="1">Sangat Kecewa (⭐ 1)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table View -->
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-600 text-[11px] font-bold uppercase tracking-wider border-b border-slate-200">
+                                <th class="px-6 py-4">Nomor & Tanggal</th>
+                                <th class="px-6 py-4">Nama Pengunjung</th>
+                                <th class="px-6 py-4">Kategori & Instansi</th>
+                                <th class="px-6 py-4">Tujuan Kunjungan</th>
+                                <th class="px-6 py-4">Rating IKM</th>
+                                <th class="px-6 py-4">Status & Petugas</th>
+                                <th class="px-6 py-4 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="visitor-table-body" class="divide-y divide-slate-100 text-sm">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- No Data Fallback state -->
+                <div id="table-empty-state" class="hidden p-12 text-center space-y-3">
+                    <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 mx-auto flex items-center justify-center">
+                        <i data-lucide="database-backup" class="h-6 w-6"></i>
+                    </div>
+                    <div>
+                        <h5 class="font-bold text-slate-800">Tidak Ada Data Kunjungan</h5>
+                        <p class="text-xs text-slate-500 max-w-sm mx-auto">Silakan lakukan pengisian buku tamu pada menu utama atau tekan tombol 'Simulasi Data' untuk menghasilkan data dummy.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- CUSTOM TOAST MESSAGE CONTAINER -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 space-y-2 pointer-events-none"></div>
+
+    <!-- ========================================== -->
+    <!-- ========================================== -->
+    <!-- VISITOR DETAIL MODAL (ADMIN AREA) -->
+    <div id="visitor-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full border border-slate-200 shadow-2xl overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modal-content">
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-lpse-800 to-indigo-900 text-white p-6 flex justify-between items-center">
+                <div>
+                    <h3 id="modal-title-no" class="text-lg font-bold">LPSE-2026-0001</h3>
+                    <p class="text-xs text-slate-200">Detail Rekam Kunjungan</p>
+                </div>
+                <button onclick="closeDetailModal()" class="text-white/80 hover:text-white transition bg-white/10 hover:bg-white/20 p-1.5 rounded-lg">
+                    <i data-lucide="x" class="h-5 w-5"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6 space-y-4 text-sm" id="modal-details-body">
+                <!-- Content injected dynamically via JS -->
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex justify-end">
+                <button onclick="closeDetailModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold rounded-lg transition">
+                    Tutup Detail
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 mt-auto py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-500 font-medium">
+            <div class="flex items-center gap-2">
+                <i data-lucide="shield" class="h-4 w-4 text-lpse-500"></i>
+                <span>© 2026 Layanan Pengadaan Secara Elektronik (LPSE). All rights reserved.</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="hover:text-lpse-600 transition cursor-pointer">Syarat & Ketentuan</span>
+                <span class="hover:text-lpse-600 transition cursor-pointer">Pusat Bantuan</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========================================== -->
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT LOGIC AND CORE ENGINE -->
+    <script>
+        // App Core State
+        let currentStep = 1;
+        const totalSteps = 3;
+        let selectedTab = 'form-page';
+        let visitsData = [];
+        let purposeChartInstance = null;
+        let categoryChartInstance = null;
+
+        // Initialize App on Window Load
+        window.onload = function() {
+            // Setup icons
+            lucide.createIcons();
+            
+            // Load local visits data
+            loadVisitsFromStorage();
+            
+            // Auto fill current date/time values dynamically
+            const now = new Date();
+            
+            // Keep app in correct tab view
+            switchTab('form-page');
+        };
+
+        // Load & Save State with Local Storage
+        function loadVisitsFromStorage() {
+            const stored = localStorage.getItem('lpse_visits_data');
+            if (stored) {
+                try {
+                    visitsData = JSON.parse(stored);
+                } catch(e) {
+                    visitsData = [];
+                }
+            } else {
+                visitsData = [];
+            }
+        }
+
+        function saveVisitsToStorage() {
+            localStorage.setItem('lpse_visits_data', JSON.stringify(visitsData));
+        }
+
+        // Change placeholder/label depending on visitor type
+        function handleCategoryChange() {
+            const cat = document.getElementById('visitor-category').value;
+            const label = document.getElementById('label-instansi');
+            const input = document.getElementById('visitor-organization');
+            
+            if (cat === "Penyedia Jasa") {
+                label.innerHTML = "Nama Perusahaan / Vendor <span class='text-red-500'>*</span>";
+                input.placeholder = "Contoh: CV. Arta Mandiri Utama / PT. Mega Karya";
+            } else if (cat === "Internal Pemerintah") {
+                label.innerHTML = "Nama Perangkat Daerah / OPD <span class='text-red-500'>*</span>";
+                input.placeholder = "Contoh: Dinas PUPR / Badan Keuangan Daerah (BKD)";
+            } else {
+                label.innerHTML = "Nama Instansi / Keterangan Asal <span class='text-red-500'>*</span>";
+                input.placeholder = "Contoh: Individu Mandiri / Universitas Bengkulu";
+            }
+        }
+
+        // Form Step Navigation Rules
+        function navigateStep(direction) {
+            // Validation rules before forwarding
+            if (direction === 1) {
+                if (currentStep === 1) {
+                    // Validate Identitas
+                    const name = document.getElementById('visitor-name').value.trim();
+                    const phone = document.getElementById('visitor-phone').value.trim();
+                    const category = document.getElementById('visitor-category').value;
+                    const org = document.getElementById('visitor-organization').value.trim();
+                    
+                    if (!name || !phone || !category || !org) {
+                        showToast("Mohon lengkapi seluruh kolom bertanda bintang (*)", "error");
+                        return;
+                    }
+                } else if (currentStep === 2) {
+                    // Validate Tujuan
+                    const selectedPurpose = document.querySelector('input[name="visit-purpose"]:checked');
+                    const officer = document.getElementById('assigned-officer').value;
+                    
+                    if (!selectedPurpose || !officer) {
+                        showToast("Pilih salah satu Tujuan Utama dan Petugas LPSE", "error");
+                        return;
+                    }
+                } else if (currentStep === 3) {
+                    // Final Submit Validation
+                    const selectedRating = document.querySelector('input[name="satisfaction-rating"]:checked');
+                    if (!selectedRating) {
+                        showToast("Pilih tingkat kepuasan Anda terlebih dahulu", "error");
+                        return;
+                    }
+                    // Trigger form submit
+                    handleFormSubmit();
+                    return;
+                }
+            }
+
+            // Move step indicator
+            currentStep += direction;
+            if (currentStep < 1) currentStep = 1;
+            if (currentStep > totalSteps) currentStep = totalSteps;
+
+            updateStepUI();
+        }
+
+        function updateStepUI() {
+            // Hide all steps
+            document.getElementById('step-section-1').classList.add('hidden');
+            document.getElementById('step-section-2').classList.add('hidden');
+            document.getElementById('step-section-3').classList.add('hidden');
+
+            // Show current step
+            document.getElementById(`step-section-${currentStep}`).classList.remove('hidden');
+
+            // Update Header progress indicators
+            document.getElementById('step-badge').innerText = `Langkah ${currentStep} dari ${totalSteps}`;
+            
+            // Class management for indicator steps
+            for (let i = 1; i <= 3; i++) {
+                const ind = document.getElementById(`indicator-${i}`);
+                if (i === currentStep) {
+                    ind.className = "h-2 w-8 rounded-full bg-lpse-600 transition-all duration-300";
+                } else if (i < currentStep) {
+                    ind.className = "h-2 w-2 rounded-full bg-emerald-500 transition-all duration-300";
+                } else {
+                    ind.className = "h-2 w-2 rounded-full bg-slate-200 transition-all duration-300";
+                }
+            }
+
+            // Adjust navigation buttons visibility
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+
+            if (currentStep === 1) {
+                prevBtn.classList.add('invisible');
+            } else {
+                prevBtn.classList.remove('invisible');
+            }
+
+            if (currentStep === totalSteps) {
+                nextBtn.innerHTML = `<span>Selesai & Kirim</span> <i data-lucide="check" class="h-4 w-4"></i>`;
+                nextBtn.className = "flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/10 transition";
+            } else {
+                nextBtn.innerHTML = `<span>Lanjut</span> <i data-lucide="arrow-right" class="h-4 w-4"></i>`;
+                nextBtn.className = "flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold bg-lpse-600 hover:bg-lpse-700 text-white shadow-lg shadow-lpse-600/10 transition";
+            }
+            lucide.createIcons();
+        }
+
+        // Form Submission Handler
+        function handleFormSubmit(event) {
+            if (event) event.preventDefault();
+
+            // Extract values
+            const name = document.getElementById('visitor-name').value.trim();
+            const phone = document.getElementById('visitor-phone').value.trim();
+            const email = document.getElementById('visitor-email').value.trim();
+            const category = document.getElementById('visitor-category').value;
+            const org = document.getElementById('visitor-organization').value.trim();
+            const purpose = document.querySelector('input[name="visit-purpose"]:checked').value;
+            const details = document.getElementById('visit-details').value.trim();
+            const method = document.getElementById('visit-method').value;
+            const officer = document.getElementById('assigned-officer').value;
+            const rating = parseInt(document.querySelector('input[name="satisfaction-rating"]:checked').value, 10);
+            const feedback = document.getElementById('visitor-feedback').value.trim();
+
+            // Create Unique Visit ID
+            const visitCode = `LPSE-2026-${String(visitsData.length + 1).padStart(4, '0')}`;
+            const visitTimestamp = new Date().toISOString();
+
+            // Structure submission object
+            const record = {
+                id: visitCode,
+                timestamp: visitTimestamp,
+                name,
+                phone,
+                email,
+                category,
+                organization: org,
+                purpose,
+                details,
+                method,
+                officer,
+                rating,
+                feedback
+            };
+
+            // Save record
+            visitsData.push(record);
+            saveVisitsToStorage();
+
+            // Populate digital ticket confirmation page values
+            document.getElementById('ticket-number').innerText = visitCode;
+            document.getElementById('ticket-name').innerText = name;
+            document.getElementById('ticket-org').innerText = org;
+            document.getElementById('ticket-purpose').innerText = purpose;
+            document.getElementById('ticket-officer').innerText = officer;
+            document.getElementById('ticket-method').innerText = method;
+            
+            // Format time representation
+            const dateObj = new Date(visitTimestamp);
+            const dateStr = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+            const timeStr = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+            document.getElementById('ticket-datetime').innerText = `${dateStr}, ${timeStr}`;
+
+            // Redirect screen to Ticket Page view
+            switchTab('ticket-page');
+            showToast("Buku tamu berhasil dikirim!", "success");
+        }
+
+        // Return form state back to beginning for new entry
+        function resetAndFillAgain() {
+            document.getElementById('visitation-form').reset();
+            currentStep = 1;
+            updateStepUI();
+            switchTab('form-page');
+        }
+
+        // Mock PDF Download
+        function downloadTicketSimulated() {
+            showToast("Mengunduh bukti pendaftaran PDF...", "success");
+            const number = document.getElementById('ticket-number').innerText;
+            
+            // Build CSV/Text simulation file download
+            const dataStr = `BUKTI PENDAPAFTARAN KUNJUNGAN LPSE\n` +
+                          `===================================\n` +
+                          `Nomor Tiket : ${number}\n` +
+                          `Nama        : ${document.getElementById('ticket-name').innerText}\n` +
+                          `Instansi    : ${document.getElementById('ticket-org').innerText}\n` +
+                          `Tujuan      : ${document.getElementById('ticket-purpose').innerText}\n` +
+                          `Petugas     : ${document.getElementById('ticket-officer').innerText}\n` +
+                          `Jadwal      : ${document.getElementById('ticket-datetime').innerText}\n` +
+                          `Metode      : ${document.getElementById('ticket-method').innerText}\n\n` +
+                          `LPSE Kabupaten Mukomuko - Layanan Terpercaya`;
+            
+            const blob = new Blob([dataStr], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Tiket-LPSE-${number}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // TAB NAVIGATION CONTROLLER
+        function switchTab(tabId) {
+            selectedTab = tabId;
+
+            // Hide all potential screen divs
+            document.getElementById('form-page').classList.add('hidden');
+            document.getElementById('ticket-page').classList.add('hidden');
+            document.getElementById('admin-auth-page').classList.add('hidden');
+            document.getElementById('admin-dashboard-page').classList.add('hidden');
+
+            // Show requested tab
+            document.getElementById(tabId).classList.remove('hidden');
+
+            // Toggle top buttons style
+            const formBtn = document.getElementById('nav-btn-form');
+            const adminBtn = document.getElementById('nav-btn-admin');
+
+            if (tabId === 'form-page' || tabId === 'ticket-page') {
+                formBtn.className = "flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold bg-lpse-600 text-white shadow-md shadow-lpse-600/10 hover:bg-lpse-700 transition";
+                adminBtn.className = "flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:text-lpse-700 hover:bg-slate-50 border border-transparent hover:border-slate-200 transition";
+            } else {
+                formBtn.className = "flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:text-lpse-700 hover:bg-slate-50 border border-transparent hover:border-slate-200 transition";
+                adminBtn.className = "flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold bg-lpse-600 text-white shadow-md shadow-lpse-600/10 hover:bg-lpse-700 transition";
+            }
+
+            // If entering admin dashboard directly, make sure session authorized
+            if (tabId === 'admin-dashboard-page') {
+                const isAuthorized = sessionStorage.getItem('lpse_admin_auth');
+                if (isAuthorized !== 'true') {
+                    switchTab('admin-auth-page');
+                } else {
+                    renderDashboardData();
+                }
+            }
+        }
+
+        // ==========================================
+        // ==========================================
+        // Admin Access Authentication
+        function handleAdminAuth(event) {
+            if (event) event.preventDefault();
+            const pass = document.getElementById('admin-password').value;
+            const errorDiv = document.getElementById('auth-error');
+
+            if (pass === 'admin123') {
+                sessionStorage.setItem('lpse_admin_auth', 'true');
+                errorDiv.classList.add('hidden');
+                document.getElementById('admin-password').value = '';
+                switchTab('admin-dashboard-page');
+                showToast("Berhasil masuk panel petugas", "success");
+            } else {
+                errorDiv.classList.remove('hidden');
+                showToast("Kata sandi yang Anda masukkan salah!", "error");
+            }
+        }
+
+        function logoutAdmin() {
+            sessionStorage.removeItem('lpse_admin_auth');
+            switchTab('form-page');
+            showToast("Anda telah keluar dari panel petugas", "success");
+        }
+
+        // Toast Notification system
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            // Define styling colors based on type
+            let bgClass = "bg-white border-slate-200 text-slate-800";
+            let iconMarkup = '<i data-lucide="info" class="h-4 w-4 text-blue-500"></i>';
+
+            if (type === 'success') {
+                bgClass = "bg-emerald-50 border-emerald-200 text-emerald-900";
+                iconMarkup = '<i data-lucide="check-circle" class="h-4 w-4 text-emerald-600"></i>';
+            } else if (type === 'error') {
+                bgClass = "bg-red-50 border-red-200 text-red-900";
+                iconMarkup = '<i data-lucide="alert-triangle" class="h-4 w-4 text-red-600"></i>';
+            }
+
+            toast.className = `flex items-center gap-3 px-4 py-3 rounded-xl border shadow-lg ${bgClass} text-xs font-bold transition-all duration-300 transform translate-y-2 opacity-0 pointer-events-auto`;
+            toast.innerHTML = `${iconMarkup} <span>${message}</span>`;
+            
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            // Animate In
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            // Animate Out
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 4000);
+        }
+
+        // ==========================================
+        // ==========================================
+        // ADMIN DASHBOARD - DATA POPULATION AND CHARTS
+        function renderDashboardData() {
+            loadVisitsFromStorage();
+
+            // Calculate metrics & update stats cards
+            const total = visitsData.length;
+            document.getElementById('stat-total-visits').innerText = total;
+
+            // Stats: Today visits
+            const todayStr = new Date().toDateString();
+            const todayVisits = visitsData.filter(v => new Date(v.timestamp).toDateString() === todayStr).length;
+            document.getElementById('stat-today-visits').innerText = todayVisits;
+
+            // Stats: Offline counts
+            const offlineCount = visitsData.filter(v => v.method === 'Tatap Muka').length;
+            document.getElementById('stat-offline-visits').innerText = offlineCount;
+            const offlinePercentage = total > 0 ? Math.round((offlineCount / total) * 100) : 0;
+            document.getElementById('stat-offline-percentage').innerText = `${offlinePercentage}% dari total`;
+
+            // Stats: Average Rating IKM
+            let totalRating = 0;
+            visitsData.forEach(v => totalRating += (v.rating || 5));
+            const avgRating = total > 0 ? (totalRating / total).toFixed(1) : "0.0";
+            document.getElementById('stat-avg-rating').innerText = avgRating;
+
+            // Fill stars block
+            const starsBlock = document.getElementById('stat-avg-stars');
+            starsBlock.innerHTML = '';
+            const roundedStars = Math.round(parseFloat(avgRating));
+            for (let i = 1; i <= 5; i++) {
+                if (i <= roundedStars) {
+                    starsBlock.innerHTML += '<i data-lucide="star" class="h-3 w-3 fill-amber-500"></i>';
+                } else {
+                    starsBlock.innerHTML += '<i data-lucide="star" class="h-3 w-3 text-slate-300"></i>';
+                }
+            }
+            lucide.createIcons();
+
+            // Render/Refresh list view list
+            applyFilters();
+
+            // Setup chart visualizations
+            buildCharts();
+        }
+
+        // Chart Building Logic
+        function buildCharts() {
+            // Destroy previous instances if exist
+            if (purposeChartInstance) purposeChartInstance.destroy();
+            if (categoryChartInstance) categoryChartInstance.destroy();
+
+            // Tally data
+            const purposeTally = {
+                'Konsultasi SPSE': 0,
+                'Pendampingan SiRUP': 0,
+                'Registrasi & Verifikasi Berkas': 0,
+                'Penggunaan Bidding Room': 0,
+                'Penanganan Kendala Teknis': 0,
+                'Lainnya': 0
+            };
+
+            const categoryTally = {
+                'Penyedia Jasa': 0,
+                'Internal Pemerintah': 0,
+                'Masyarakat Umum': 0,
+                'Lainnya': 0
+            };
+
+            visitsData.forEach(v => {
+                if (purposeTally[v.purpose] !== undefined) purposeTally[v.purpose]++;
+                if (categoryTally[v.category] !== undefined) categoryTally[v.category]++;
+            });
+
+            // 1. Purposes Bar Chart
+            const ctxPurpose = document.getElementById('purposeChart').getContext('2d');
+            purposeChartInstance = new Chart(ctxPurpose, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(purposeTally),
+                    datasets: [{
+                        label: 'Jumlah Kunjungan',
+                        data: Object.values(purposeTally),
+                        backgroundColor: [
+                            'rgba(14, 143, 229, 0.75)',
+                            'rgba(99, 102, 241, 0.75)',
+                            'rgba(20, 184, 166, 0.75)',
+                            'rgba(245, 158, 11, 0.75)',
+                            'rgba(239, 68, 68, 0.75)',
+                            'rgba(148, 163, 184, 0.75)'
+                        ],
+                        borderWidth: 0,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { precision: 0 } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // 2. Category Doughnut Chart
+            const ctxCategory = document.getElementById('categoryChart').getContext('2d');
+            categoryChartInstance = new Chart(ctxCategory, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(categoryTally),
+                    datasets: [{
+                        data: Object.values(categoryTally),
+                        backgroundColor: [
+                            '#0e8fe5',
+                            '#6366f1',
+                            '#10b981',
+                            '#94a3b8'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15 } }
+                    },
+                    cutout: '60%'
+                }
+            });
+        }
+
+        // Filtering & Searching Logic for table list
+        function applyFilters() {
+            const query = document.getElementById('filter-search').value.toLowerCase();
+            const category = document.getElementById('filter-category').value;
+            const purpose = document.getElementById('filter-purpose').value;
+            const rating = document.getElementById('filter-rating').value;
+
+            const tbody = document.getElementById('visitor-table-body');
+            tbody.innerHTML = '';
+
+            const filtered = visitsData.filter(v => {
+                // Search keyword matching
+                const matchesSearch = v.name.toLowerCase().includes(query) || 
+                                      v.organization.toLowerCase().includes(query) ||
+                                      v.id.toLowerCase().includes(query);
+                
+                // Dropdown match parameters
+                const matchesCategory = category === 'ALL' || v.category === category;
+                const matchesPurpose = purpose === 'ALL' || v.purpose === purpose;
+                const matchesRating = rating === 'ALL' || v.rating.toString() === rating;
+
+                return matchesSearch && matchesCategory && matchesPurpose && matchesRating;
+            });
+
+            // Handle empty states layout toggle
+            if (filtered.length === 0) {
+                document.getElementById('table-empty-state').classList.remove('hidden');
+            } else {
+                document.getElementById('table-empty-state').classList.add('hidden');
+                
+                // Sort by latest entry
+                filtered.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                filtered.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.className = "hover:bg-slate-50 transition cursor-pointer";
+                    row.setAttribute('onclick', `showRecordDetails('${item.id}')`);
+
+                    // Beautiful Date parsing
+                    const dateObj = new Date(item.timestamp);
+                    const localDate = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
+                    const localTime = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+                    // Ratings stars builder
+                    let ratingStars = '';
+                    for (let i = 1; i <= 5; i++) {
+                        ratingStars += i <= item.rating 
+                            ? '⭐' 
+                            : '<span class="opacity-20">⭐</span>';
+                    }
+
+                    // Badge Method formatting
+                    const methodBadge = item.method === 'Tatap Muka'
+                        ? '<span class="bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full text-[10px] font-bold border border-indigo-150">Tatap Muka</span>'
+                        : '<span class="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full text-[10px] font-bold border border-emerald-150">Online</span>';
+
+                    // Insert Row markup
+                    row.innerHTML = `
+                        <td class="px-6 py-4">
+                            <span class="font-bold text-slate-900 block">${item.id}</span>
+                            <span class="text-xs text-slate-400 font-medium">${localDate}, ${localTime} WIB</span>
+                        </td>
+                        <td class="px-6 py-4 font-semibold text-slate-800">${item.name}</td>
+                        <td class="px-6 py-4">
+                            <span class="font-medium text-slate-800 block">${item.organization}</span>
+                            <span class="text-xs text-slate-400">${item.category}</span>
+                        </td>
+                        <td class="px-6 py-4 text-slate-700 font-medium">${item.purpose}</td>
+                        <td class="px-6 py-4 text-xs">${ratingStars}</td>
+                        <td class="px-6 py-4">
+                            <div class="space-y-1">
+                                ${methodBadge}
+                                <span class="text-[10px] text-slate-500 block font-medium truncate max-w-[120px]">${item.officer}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-center" onclick="event.stopPropagation()">
+                            <button onclick="showRecordDetails('${item.id}')" class="text-lpse-600 hover:text-lpse-800 hover:bg-lpse-50 p-1.5 rounded-lg transition" title="Lihat Detail">
+                                <i data-lucide="eye" class="h-4.5 w-4.5"></i>
+                            </button>
+                            <button onclick="deleteRecord('${item.id}')" class="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 rounded-lg transition" title="Hapus">
+                                <i data-lucide="trash-2" class="h-4.5 w-4.5"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+            lucide.createIcons();
+        }
+
+        // Record deleting confirmation simulation
+        function deleteRecord(id) {
+            // Replaced default window.confirm with a custom modal simulator for safety
+            const isConfirmed = confirm(`Apakah Anda yakin ingin menghapus data kunjungan ${id}?`);
+            if (isConfirmed) {
+                visitsData = visitsData.filter(v => v.id !== id);
+                saveVisitsToStorage();
+                renderDashboardData();
+                showToast(`Data ${id} telah dihapus!`, "success");
+            }
+        }
+
+        // Render Detail Modal overlay
+        function showRecordDetails(id) {
+            const item = visitsData.find(v => v.id === id);
+            if (!item) return;
+
+            document.getElementById('modal-title-no').innerText = item.id;
+            
+            // Format detailed Date time
+            const dateObj = new Date(item.timestamp);
+            const dateStr = dateObj.toLocaleDateString('id-ID', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+            const timeStr = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+
+            // Custom description layout
+            const modalBody = document.getElementById('modal-details-body');
+            modalBody.innerHTML = `
+                <div class="space-y-3">
+                    <div class="grid grid-cols-2 gap-2 border-b border-slate-100 pb-3">
+                        <div>
+                            <span class="text-[10px] text-slate-400 block uppercase font-bold">Waktu Masuk</span>
+                            <span class="font-semibold text-slate-800 text-xs">${dateStr}<br>${timeStr}</span>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-slate-400 block uppercase font-bold">Metode Layanan</span>
+                            <span class="font-bold text-lpse-700 text-xs">${item.method}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-1">
+                        <span class="text-[10px] text-slate-400 block uppercase font-bold">Nama Lengkap</span>
+                        <span class="font-semibold text-slate-900 text-base block">${item.name}</span>
+                        <span class="text-xs text-slate-500 block">Hubungi (WA): ${item.phone}</span>
+                        ${item.email ? `<span class="text-xs text-slate-500 block">Email: ${item.email}</span>` : ''}
+                    </div>
+
+                    <div class="space-y-1 pt-2">
+                        <span class="text-[10px] text-slate-400 block uppercase font-bold">Asal Instansi & Kategori</span>
+                        <span class="font-bold text-slate-800 block">${item.organization}</span>
+                        <span class="text-xs text-slate-500 block bg-slate-100 px-2 py-0.5 rounded w-max">${item.category}</span>
+                    </div>
+
+                    <div class="space-y-1 pt-2">
+                        <span class="text-[10px] text-slate-400 block uppercase font-bold">Maksud / Layanan Utama</span>
+                        <span class="font-bold text-indigo-700 block">${item.purpose}</span>
+                    </div>
+
+                    <div class="space-y-1 pt-2 bg-slate-50 p-3 rounded-lg border">
+                        <span class="text-[10px] text-slate-400 block uppercase font-bold">Detail Tambahan Masalah</span>
+                        <p class="text-slate-700 text-xs leading-relaxed italic">${item.details || 'Tidak ada detail tertulis.'}</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                        <div>
+                            <span class="text-[10px] text-slate-400 block uppercase font-bold">Petugas Helpdesk</span>
+                            <span class="text-slate-800 text-xs font-semibold">${item.officer}</span>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-slate-400 block uppercase font-bold">Indeks Kepuasan (Rating)</span>
+                            <span class="text-slate-800 text-xs font-bold block">⭐ ${item.rating} / 5</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1 pt-2">
+                        <span class="text-[10px] text-slate-400 block uppercase font-bold">Kritik, Saran & Masukan</span>
+                        <p class="text-slate-600 text-xs bg-amber-50 border border-amber-100 p-2.5 rounded-lg">${item.feedback || 'Nihil.'}</p>
+                    </div>
+                </div>
+            `;
+
+            // Display modal
+            const modal = document.getElementById('visitor-modal');
+            const content = document.getElementById('modal-content');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+            }, 50);
+            
+            lucide.createIcons();
+        }
+
+        function closeDetailModal() {
+            const modal = document.getElementById('visitor-modal');
+            const content = document.getElementById('modal-content');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // ==========================================
+        // ==========================================
+        // Mock Data Generator for admin simulation purposes
+        function generateMockData() {
+            const mockNames = ['Diana Lestari', 'Agus Prayogo', 'Rahmat Fauzi', 'Siti Aminah', 'Yayan Ruhian', 'Siska Herawati', 'Anton Nugroho'];
+            const mockOrgs = ['CV. Cipta Konstruksi Mandiri', 'Dinas Pariwisata Mukomuko', 'PT. Swakarsa Abadi', 'Kantor BPN', 'Dinas Perhubungan', 'CV. Maju Jaya Bersama', 'Kantor Camat'];
+            const mockCategories = ['Penyedia Jasa', 'Internal Pemerintah', 'Penyedia Jasa', 'Internal Pemerintah', 'Internal Pemerintah', 'Penyedia Jasa', 'Masyarakat Umum'];
+            const mockPurposes = ['Konsultasi SPSE', 'Pendampingan SiRUP', 'Registrasi & Verifikasi Berkas', 'Penanganan Kendala Teknis', 'Penggunaan Bidding Room', 'Konsultasi SPSE', 'Lainnya'];
+            const mockOfficers = ['Rina Amalia (Helpdesk SPSE)', 'Ahmad Dhani (Asisten Teknis)', 'Nur Haliza (Verifikator Berkas)', 'Suryo Haryono (Koordinator)'];
+            const mockMethods = ['Tatap Muka', 'Online / Remote', 'Tatap Muka'];
+            
+            // Backdate generator
+            for (let i = 0; i < 15; i++) {
+                const randIndex = Math.floor(Math.random() * mockNames.length);
+                const randomRating = Math.floor(Math.random() * 3) + 3; // Rating 3 to 5
+                
+                const mockCode = `LPSE-2026-${String(visitsData.length + 1).padStart(4, '0')}`;
+                
+                // Random time offsets (past 3 days)
+                const offsetMs = Math.floor(Math.random() * 3 * 24 * 60 * 60 * 1000);
+                const stamp = new Date(Date.now() - offsetMs).toISOString();
+
+                const dummy = {
+                    id: mockCode,
+                    timestamp: stamp,
+                    name: mockNames[randIndex],
+                    phone: `0812${Math.floor(10000000 + Math.random() * 90000000)}`,
+                    email: `${mockNames[randIndex].toLowerCase().replace(' ', '')}@gmail.com`,
+                    category: mockCategories[randIndex],
+                    organization: mockOrgs[randIndex],
+                    purpose: mockPurposes[Math.floor(Math.random() * mockPurposes.length)],
+                    details: 'Pengujian integrasi berkas pendaftaran dan verifikasi izin usaha.',
+                    method: mockMethods[Math.floor(Math.random() * mockMethods.length)],
+                    officer: mockOfficers[Math.floor(Math.random() * mockOfficers.length)],
+                    rating: randomRating,
+                    feedback: 'Layanan helpdesk ramah dan cepat selesai.'
+                };
+                visitsData.push(dummy);
+            }
+
+            saveVisitsToStorage();
+            renderDashboardData();
+            showToast("Berhasil menghasilkan 15 data simulasi kunjungan!", "success");
+        }
+
+        // Export To CSV File Generator (Client-Side)
+        function exportToCSV() {
+            if (visitsData.length === 0) {
+                showToast("Tidak ada data kunjungan untuk diekspor!", "error");
+                return;
+            }
+
+            // Headers row definition
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "ID,Tanggal,Nama Pengunjung,Nomor Kontak,Email,Kategori,Instansi/Perusahaan,Tujuan,Metode,Petugas,Rating,Kritik/Saran\r\n";
+
+            visitsData.forEach(row => {
+                const cleanFeedback = (row.feedback || '').replace(/"/g, '""');
+                const cleanDetails = (row.details || '').replace(/"/g, '""');
+                
+                const line = [
+                    row.id,
+                    new Date(row.timestamp).toLocaleString('id-ID'),
+                    `"${row.name}"`,
+                    `"${row.phone}"`,
+                    `"${row.email || '-'}"`,
+                    `"${row.category}"`,
+                    `"${row.organization}"`,
+                    `"${row.purpose}"`,
+                    `"${row.method}"`,
+                    `"${row.officer}"`,
+                    row.rating,
+                    `"${cleanFeedback}"`
+                ].join(",");
+                csvContent += line + "\r\n";
+            });
+
+            // Simulated Download action
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Rekap_Kunjungan_LPSE_2026.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("Unduhan laporan CSV siap dibuka di Excel!", "success");
+        }
+    </script>
+</body>
+</html>
