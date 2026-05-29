@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Tamu LPSE | Sistem Pencatatan Kunjungan Online</title>
+    <title>E-Tamu UKPBJ| Sistem Pencatatan Kunjungan Online</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
@@ -125,7 +125,7 @@
                                 <i data-lucide="user" class="text-blue-600 w-5 h-5"></i>
                                 Informasi Identitas & Afiliasi
                             </h3>
-                            <p class="text-xs text-slate-500 mt-1">Isilah data dengan benar untuk mempermudah validasi berkas oleh verifikator.</p>
+                            <p class="text-xs text-slate-500 mt-1">Isilah data dengan benar untuk mempermudah Proses Kunjungan Anda.</p>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -254,6 +254,17 @@
                                 <label class="border border-slate-200 hover:border-blue-500 rounded-xl p-4 flex items-start gap-3 cursor-pointer transition-all bg-white hover:bg-blue-50/20 shadow-sm relative">
                                     <input type="radio" name="visitor_purpose" value="Keperluan Lainnya" class="mt-1 h-4 w-4 text-blue-600 border-slate-300 focus:ring-blue-500">
                                     <div>
+                                        <span class="block text-sm font-bold text-slate-800">Koordinasi dan Konsultasi E-Tender</span>
+                                        <span class="block text-xs text-slate-500 mt-0.5">Tujuan Mengenai Proses Pengadaan</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                         </label>
+                                <!-- Card 7 -->
+                                <label class="border border-slate-200 hover:border-blue-500 rounded-xl p-4 flex items-start gap-3 cursor-pointer transition-all bg-white hover:bg-blue-50/20 shadow-sm relative">
+                                    <input type="radio" name="visitor_purpose" value="Keperluan Lainnya" class="mt-1 h-4 w-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                                    <div>
                                         <span class="block text-sm font-bold text-slate-800">Keperluan Lainnya</span>
                                         <span class="block text-xs text-slate-500 mt-0.5">Tujuan di luar daftar klasifikasi</span>
                                     </div>
@@ -292,7 +303,8 @@
                                     </div>
                                     <select id="lpse_officer" required class="pl-10 block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all shadow-sm appearance-none">
                                         <option value="">-- Pilih Petugas / Helpdesk --</option>
-                                        <option value="Agustiadi (Koordinator)">Agustiadi (Koordinator)</option>
+                                        <option value="Ir.EFFIH,.ST,.MT,.IPP (Verifikator Berkas)">Ir.EFFIH,.ST,.MT,.IPP (Kepala UKPBJ)</option>
+                                        <option value="Agustiadi (Koordinator)">Agustiadi (Koordinator LPSE)</option>
                                         <option value="Haini Samsi (Helpdesk SPSE)">Haini Samsi (Helpdesk SPSE)</option>
                                         <option value="Adi Mulya (Asisten Teknis)">Adi Mulya (Asisten Teknis)</option>
                                         <option value="Syafprizal (Verifikator Berkas)">Syafprizal (Verifikator Berkas)</option>
