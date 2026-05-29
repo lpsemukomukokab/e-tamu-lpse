@@ -1298,20 +1298,22 @@ function handleData(e) {<br>
         }
 
         // Ekspor Bukti Pendaftaran PDF (Menggunakan html2pdf.js)
-        function downloadTicketPDF() {
-            const element = document.getElementById('receipt-pdf-content');
-            const visitorName = document.getElementById('receipt-name').textContent;
-            
-            const opt = {
-                margin:       10,
-                filename:     `Tiket-Kunjungan-UKPBJ-Mukomuko_${visitorName.replace(/\s+/g, '_')}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            
-            html2pdf().set(opt).from(element).save();
-        }
+             // Ekspor Bukti Pendaftaran PDF (Menggunakan html2pdf.js)
+      /* Pastikan elemen cetak memiliki lebar ideal untuk kertas A4 */
+#receipt-pdf-content {
+    width: 790px; /* Sangat pas untuk lebar A4 dengan margin 10mm */
+    padding: 20px;
+    background: #ffffff;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Hindari pemotongan halaman di tengah elemen penting jika tiket panjang */
+.pdf-avoid-break {
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+        
 
 
         // ================= ADMIN & LOGIN MANAGEMENT SYSTEM ================= -->
