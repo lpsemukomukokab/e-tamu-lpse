@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Tamu UKPBJ | Sistem Pencatatan Kunjungan Online</title>
+    <title>E-Tamu UKPBJ | Bagian Pengadaan Barang dan Jasa Sekretariat Daerah Kabupaten Mukomuko</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Chart.js for Admin Analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- html2pdf.js for Ticket PDF Generation -->
@@ -38,24 +38,28 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between text-slate-800">
 
-    <!-- Top Navigation Header -->
-    <header class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white shadow-lg sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div class="flex items-center space-x-3 text-center sm:text-left">
-                <div class="bg-white/10 p-2.5 rounded-xl border border-white/20 shadow-inner">
-                    <i data-lucide="shield-check" class="w-8 h-8 text-yellow-400"></i>
+    <!-- Top Navigation Header with Kabupaten Mukomuko Logo -->
+    <header class="bg-gradient-to-r from-blue-900 to-indigo-950 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col lg:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-4 text-center sm:text-left">
+                <!-- Official Logo Kabupaten Mukomuko -->
+                <div class="bg-white p-1.5 rounded-xl border border-white/20 shadow-md shrink-0 flex items-center justify-center w-14 h-14">
+                    <img src="Logo_Mukomukokab.png" 
+                         alt="Logo Kabupaten Mukomuko" 
+                         class="w-full h-full object-contain"
+                         onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/5/52/Logo_Mukomuko.png'">
                 </div>
                 <div>
-                    <div class="flex items-center justify-center sm:justify-start gap-2">
-                        <span class="bg-yellow-400 text-blue-950 text-[10px] font-bold px-2 py-0.5 rounded-full tracking-wider uppercase">E-Tamu</span>
-                        <h1 class="font-extrabold text-xl tracking-tight leading-none">UKPBJ</h1>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-center sm:justify-start gap-1 sm:gap-2">
+                        <span class="bg-yellow-400 text-blue-950 text-[10px] font-black px-2 py-0.5 rounded-md tracking-wider uppercase self-center sm:self-auto">E-TAMU UKPBJ</span>
+                        <h1 class="font-extrabold text-lg sm:text-xl tracking-tight leading-none">Bagian Pengadaan Barang dan Jasa</h1>
                     </div>
-                    <p class="text-xs text-blue-200 mt-1 font-medium tracking-wide">Bagian Pengadaan Barang dan Jasa  - SETDAKAB Mukomuko</p>
+                    <p class="text-xs text-blue-200 mt-1 font-semibold tracking-wide">Sekretariat Daerah Kabupaten Mukomuko</p>
                 </div>
             </div>
             
             <!-- Navigation Action Tabs -->
-            <nav class="flex bg-blue-950/40 p-1.5 rounded-2xl border border-white/10 shadow-inner">
+            <nav class="flex bg-blue-950/40 p-1.5 rounded-2xl border border-white/10 shadow-inner shrink-0">
                 <button id="tab-guestbook-btn" onclick="switchTab('guestbook')" class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 bg-white text-blue-900 shadow-md">
                     <i data-lucide="book-open" class="w-4 h-4"></i>
                     Buku Tamu
@@ -68,7 +72,7 @@
         </div>
         <!-- Real-time dynamic subtle banner -->
         <div class="bg-blue-950 py-1.5 text-center text-[11px] text-blue-200/80 tracking-wider font-semibold uppercase border-t border-blue-800/50">
-            Layanan Digital Real-Time • Standar Pelayanan Publik Nasional
+            Pencatatan Tamu Pelayanan Publik Daerah • Kabupaten Mukomuko
         </div>
     </header>
 
@@ -80,12 +84,12 @@
             
             <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden max-w-4xl mx-auto transition-all duration-300 transform hover:shadow-2xl">
                 <!-- Banner Pengumuman Form -->
-                <div class="bg-gradient-to-r from-blue-800 via-indigo-800 to-blue-700 p-6 sm:p-8 text-white relative overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-800 via-indigo-900 to-blue-800 p-6 sm:p-8 text-white relative overflow-hidden">
                     <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
                         <i data-lucide="file-text" class="w-64 h-64"></i>
                     </div>
-                    <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Formulir Kunjungan Layanan</h2>
-                    <p class="text-blue-100 text-sm mt-2 max-w-2xl leading-relaxed">Sesuai dengan standar ISO Pelayanan Informasi Publik, mohon luangkan waktu Anda 1-2 menit untuk mencatatkan detail agenda kehadiran Anda secara lengkap dan akurat.</p>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Formulir Kunjungan Layanan UKPBJ</h2>
+                    <p class="text-blue-100 text-sm mt-2 max-w-2xl leading-relaxed">Selamat datang di Bagian Pengadaan Barang dan Jasa Kabupaten Mukomuko. Mohon lengkapi formulir di bawah ini untuk membantu kami mencatatkan tujuan kedatangan Anda.</p>
                 </div>
 
                 <!-- Step Indicator Header -->
@@ -123,9 +127,9 @@
                         <div class="border-b border-slate-100 pb-4">
                             <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
                                 <i data-lucide="user" class="text-blue-600 w-5 h-5"></i>
-                                Informasi Identitas & Afiliasi
+                                Informasi Identitas & Afiliasi Tamu
                             </h3>
-                            <p class="text-xs text-slate-500 mt-1">Isilah data dengan benar untuk mempermudah proses kunjungan anda.</p>
+                            <p class="text-xs text-slate-500 mt-1">Isilah data diri Anda beserta instansi afiliasi dengan benar untuk kelancaran administrasi daerah.</p>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -201,9 +205,9 @@
                         <div class="border-b border-slate-100 pb-4">
                             <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
                                 <i data-lucide="help-circle" class="text-blue-600 w-5 h-5"></i>
-                                Agenda Layanan & Metode Kunjungan
+                                Maksud Kunjungan & Layanan UKPBJ
                             </h3>
-                            <p class="text-xs text-slate-500 mt-1">Pilihlah klasifikasi layanan yang tepat agar kami dapat memberikan asistensi terbaik.</p>
+                            <p class="text-xs text-slate-500 mt-1">Pilihlah tujuan yang sesuai agar kami dapat menghubungkan Anda dengan petugas yang kompeten.</p>
                         </div>
 
                         <!-- Grid Layanan Card Pilihan -->
@@ -215,7 +219,7 @@
                                     <input type="radio" name="visitor_purpose" value="Konsultasi SPSE" required class="mt-1 h-4 w-4 text-blue-600 border-slate-300 focus:ring-blue-500">
                                     <div>
                                         <span class="block text-sm font-bold text-slate-800">Konsultasi SPSE</span>
-                                        <span class="block text-xs text-slate-500 mt-0.5">Pendampingan penggunaan aplikasi SPSE</span>
+                                        <span class="block text-xs text-slate-500 mt-0.5">Pendampingan penggunaan sistem SPSE</span>
                                     </div>
                                 </label>
                                 <!-- Card 2 -->
@@ -223,7 +227,7 @@
                                     <input type="radio" name="visitor_purpose" value="Pendampingan SiRUP" class="mt-1 h-4 w-4 text-blue-600 border-slate-300 focus:ring-blue-500">
                                     <div>
                                         <span class="block text-sm font-bold text-slate-800">Pendampingan SiRUP</span>
-                                        <span class="block text-xs text-slate-500 mt-0.5">Asistensi penginputan Rencana Pengadaan</span>
+                                        <span class="block text-xs text-slate-500 mt-0.5">Asistensi penginputan Rencana Umum Pengadaan</span>
                                     </div>
                                 </label>
                                 <!-- Card 3 -->
@@ -231,7 +235,7 @@
                                     <input type="radio" name="visitor_purpose" value="Registrasi & Verifikasi" class="mt-1 h-4 w-4 text-blue-600 border-slate-300 focus:ring-blue-500">
                                     <div>
                                         <span class="block text-sm font-bold text-slate-800">Registrasi & Verifikasi</span>
-                                        <span class="block text-xs text-slate-500 mt-0.5">Pembuatan akun baru / verifikasi berkas fisik</span>
+                                        <span class="block text-xs text-slate-500 mt-0.5">Pembuatan akun baru / verifikasi berkas fisik penyedia</span>
                                     </div>
                                 </label>
                                 <!-- Card 4 -->
@@ -239,7 +243,7 @@
                                     <input type="radio" name="visitor_purpose" value="Bidding Room & Internet" class="mt-1 h-4 w-4 text-blue-600 border-slate-300 focus:ring-blue-500">
                                     <div>
                                         <span class="block text-sm font-bold text-slate-800">Bidding Room & Internet</span>
-                                        <span class="block text-xs text-slate-500 mt-0.5">Memakai fasilitas komputer & internet LPSE</span>
+                                        <span class="block text-xs text-slate-500 mt-0.5">Memakai fasilitas komputer & ruang penawaran UKPBJ</span>
                                     </div>
                                 </label>
                                 <!-- Card 5 -->
@@ -247,15 +251,23 @@
                                     <input type="radio" name="visitor_purpose" value="Kendala Teknis (Troubleshoot)" class="mt-1 h-4 w-4 text-blue-600 border-slate-300 focus:ring-blue-500">
                                     <div>
                                         <span class="block text-sm font-bold text-slate-800">Kendala Teknis</span>
-                                        <span class="block text-xs text-slate-500 mt-0.5">Error sistem, kunci pengaman, sertifikat digital</span>
+                                        <span class="block text-xs text-slate-500 mt-0.5">Masalah sertifikat digital, error sistem, troubleshoot</span>
                                     </div>
                                 </label>
                                 <!-- Card 6 -->
                                 <label class="border border-slate-200 hover:border-blue-500 rounded-xl p-4 flex items-start gap-3 cursor-pointer transition-all bg-white hover:bg-blue-50/20 shadow-sm relative">
-                                    <input type="radio" name="visitor_purpose" value="Keperluan Lainnya" class="mt-1 h-4 w-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                                    <input type="radio" name="visitor_purpose" value="Keperluan Proses Pengadaan" class="mt-1 h-4 w-4 text-blue-600 border-slate-300 focus:ring-blue-500">
                                     <div>
                                         <span class="block text-sm font-bold text-slate-800">Keperluan Proses Pengadaan</span>
-                                        <span class="block text-xs text-slate-500 mt-0.5">Tujuan di luar daftar klasifikasi</span>
+                                        <span class="block text-xs text-slate-500 mt-0.5">e-Tendering, Pengadaan Langsung, e-Katalog</span>
+                                    </div>
+                                </label>
+                                <!-- Card 7 -->
+                                <label class="border border-slate-200 hover:border-blue-500 rounded-xl p-4 flex items-start gap-3 cursor-pointer transition-all bg-white hover:bg-blue-50/20 shadow-sm relative">
+                                    <input type="radio" name="visitor_purpose" value="Keperluan Lainnya" class="mt-1 h-4 w-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                                    <div>
+                                        <span class="block text-sm font-bold text-slate-800">Keperluan Lainnya</span>
+                                        <span class="block text-xs text-slate-500 mt-0.5">Maksud tujuan kedatangan di luar daftar pelayanan</span>
                                     </div>
                                 </label>
                             </div>
@@ -264,7 +276,7 @@
                         <!-- Detail Masalah Tambahan -->
                         <div class="space-y-2">
                             <label class="block text-sm font-semibold text-slate-700">Detail Kendala / Deskripsi Informasi <span class="text-xs text-slate-400">(Opsional)</span></label>
-                            <textarea id="visitor_description" rows="3" class="block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all shadow-sm" placeholder="Bisa diisi jika memerlukan catatan khusus atau kronologi error yang dialami..."></textarea>
+                            <textarea id="visitor_description" rows="3" class="block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all shadow-sm" placeholder="Bisa diisi jika memerlukan catatan khusus atau kronologi kendala yang dialami..."></textarea>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -285,21 +297,18 @@
 
                             <!-- Petugas Helpdesk -->
                             <div class="space-y-2">
-                                <label class="block text-sm font-semibold text-slate-700">Petugas / Helpdesk LPSE <span class="text-red-500">*</span></label>
+                                <label class="block text-sm font-semibold text-slate-700">Personil UKPBJ / Pegawai ASN UKPBJ <span class="text-red-500">*</span></label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <i data-lucide="user-check" class="h-5 w-5 text-slate-400"></i>
                                     </div>
                                     <select id="lpse_officer" required class="pl-10 block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all shadow-sm appearance-none">
-                                        <option value="">-- Pilih Personil UKPBJ / Pegawai ASN UKPBJ  --</option>
-                                        <option value="Dedy Kurniadi,.S.A.P (Kasubbag PBJ)">Dedy Kurniadi,.S.A.P (Kasubbag PBJ)</option>
-                                        <option value="Ir.EFFIH,.ST,.MT,.IPP (Kepala Bagian UKPBJ)">Ir.EFFIH,.ST,.MT,.IPP  (Kepala Bagian UKPBJ)</option>
-                                        <option value="Pokja Pemilihan (JFPPBJ)">Pokja Pemilihan (JFPPBJ)</option>
-                                        <option value="Agustiadi,.S.A.P (Koordinator)">Agustiadi,.S.A.P (Koordinator LPSE)</option>
-                                        <option value="Haini Samsi (Helpdesk UKPBJ)">Haini Samsi (Helpdesk UKPBJ)</option>
-                                        <option value="Adi Mulya (Asisten Teknis)">Adi Mulya (Asisten Teknis)</option>
-                                        <option value="Syafprizal (Verifikator SPSE)">Syafprizal (Verifikator SPSE)</option>
-                                        <option value="Petugas yang Ada (Siapa saja)">Petugas yang Ada (Siapa saja)</option>
+                                        <option value="">-- Pilih Personil UKPBJ / Pegawai ASN UKPBJ --</option>
+                                        <option value="Ir. Effih, ST. MT, IPP (Kepala UKPBJ)">Ir. Effih, ST. MT, IPP (Kepala UKPBJ)</option>
+                                        <option value="Dedy Kurniadi,.S.A.P (Kasubbag UKPBJ)">Dedy Kurniadi,.S.A.P (Kasubbag UKPBJ)</option>
+                                        <option value="Agustiadi,.S.A.P (Koordinator LPSE)">Agustiadi,.S.A.P (Koordinator LPSE)</option>
+                                        <option value="Pejabat Pengelola Pengadaan (JFPPBJ UKPBJ)">Pejabat Pengelola Pengadaan (JFPPBJ UKPBJ)</option>
+                                        <option value="Petugas Standby / Yang Ada">Petugas Standby / Yang Ada</option>
                                     </select>
                                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                         <i data-lucide="chevron-down" class="h-4 w-4 text-slate-400"></i>
@@ -315,14 +324,14 @@
                         <div class="border-b border-slate-100 pb-4">
                             <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
                                 <i data-lucide="heart" class="text-blue-600 w-5 h-5"></i>
-                                Penilaian Mutu Layanan (IKM)
+                                Penilaian Mutu Pelayanan UKPBJ (IKM)
                             </h3>
-                            <p class="text-xs text-slate-500 mt-1">Umpan balik Anda sangat berarti untuk memantau nilai reformasi birokrasi dan meningkatkan kinerja pelayanan kami.</p>
+                            <p class="text-xs text-slate-500 mt-1">Umpan balik Anda sangat berharga untuk mengevaluasi reformasi birokrasi dan meningkatkan kualitas pelayanan kami.</p>
                         </div>
 
                         <!-- Rating Panel -->
                         <div class="space-y-4 text-center py-6 bg-slate-50 rounded-2xl border border-slate-100">
-                            <p class="text-sm font-bold text-slate-700">Seberapa Puas Anda dengan Pelayanan Petugas LPSE Hari Ini? <span class="text-red-500">*</span></p>
+                            <p class="text-sm font-bold text-slate-700">Seberapa Puas Anda dengan Pelayanan Petugas UKPBJ Hari Ini? <span class="text-red-500">*</span></p>
                             
                             <div class="flex flex-wrap justify-center items-center gap-4 sm:gap-6 px-4">
                                 <!-- Emoticon 1 -->
@@ -360,15 +369,15 @@
 
                         <!-- Kritik Saran -->
                         <div class="space-y-2">
-                            <label class="block text-sm font-semibold text-slate-700">Kritik, Saran, atau Masukan Konstruktif <span class="text-xs text-slate-400">(Opsional)</span></label>
-                            <textarea id="visitor_feedback" rows="3" class="block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all shadow-sm" placeholder="Tuliskan saran perbaikan kualitas layanan kami..."></textarea>
+                            <label class="block text-sm font-semibold text-slate-700">Kritik, Saran, atau Masukan untuk UKPBJ <span class="text-xs text-slate-400">(Opsional)</span></label>
+                            <textarea id="visitor_feedback" rows="3" class="block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all shadow-sm" placeholder="Tuliskan saran untuk perbaikan kualitas layanan kami..."></textarea>
                         </div>
 
                         <!-- Disclaimer Agreement -->
                         <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex items-start gap-3">
                             <input type="checkbox" id="disclaimer_agree" required class="mt-1 h-4.5 w-4.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer">
                             <label for="disclaimer_agree" class="text-xs text-slate-600 leading-relaxed cursor-pointer select-none">
-                                Saya menyatakan bahwa seluruh informasi di atas diisi dengan jujur, benar, dan sah demi kelancaran tertib administrasi pendaftaran kunjungan LPSE Kabupaten Mukomuko.
+                                Saya menyatakan bahwa seluruh informasi di atas diisi dengan jujur, benar, dan sah demi kelancaran pendaftaran kunjungan pada Bagian Pengadaan Barang dan Jasa Kabupaten Mukomuko.
                             </label>
                         </div>
                     </div>
@@ -416,9 +425,20 @@
 
                 <!-- Konten Tiket (Akan Diunduh sebagai PDF) -->
                 <div id="receipt-pdf-content" class="p-6 sm:p-8 space-y-6 bg-white">
-                    <div class="text-center space-y-2 border-b border-dashed border-slate-200 pb-6">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nomor Kunjungan Anda</span>
-                        <h3 id="receipt-id" class="text-3xl font-extrabold text-blue-900 tracking-tight">LPSE-2026-0001</h3>
+                    <!-- Receipt Header with Logo -->
+                    <div class="flex items-center justify-center gap-3 border-b border-dashed border-slate-200 pb-4">
+                        <img src="Logo_Mukomukokab.png" 
+                             alt="Logo" class="w-10 h-10 object-contain"
+                             onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/2/29/Lambang_Kabupaten_Mukomuko.png'">
+                        <div class="text-left">
+                            <h4 class="text-xs font-black text-slate-800 leading-none">UKPBJ KABUPATEN MUKOMUKO</h4>
+                            <p class="text-[9px] text-slate-400 font-semibold mt-1">Bagian Pengadaan Barang dan Jasa Sekretariat Daerah</p>
+                        </div>
+                    </div>
+
+                    <div class="text-center space-y-2 pb-2">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nomor Antrean / Kunjungan</span>
+                        <h3 id="receipt-id" class="text-3xl font-extrabold text-blue-900 tracking-tight">UKPBJ-2026-0001</h3>
                         <p class="text-[11px] text-amber-600 bg-amber-50 px-3 py-1 rounded-full inline-block font-semibold border border-amber-100">Simpan atau tunjukkan nomor ini ke petugas</p>
                     </div>
 
@@ -453,7 +473,7 @@
                     <!-- Area QR Code Loket -->
                     <div class="border-t border-slate-100 pt-6 flex flex-col items-center justify-center text-center space-y-3">
                         <div class="bg-white p-3 border-2 border-slate-100 rounded-2xl shadow-inner inline-block" id="qrcode-box">
-                            <!-- SVG QR Code Placeholder aman -->
+                            <!-- SVG QR Code Placeholder -->
                             <svg class="w-32 h-32 text-slate-800" viewBox="0 0 100 100">
                                 <rect width="100" height="100" fill="none"/>
                                 <!-- Outline & Corner Anchors -->
@@ -474,7 +494,7 @@
                                 <rect x="90" y="40" width="5" height="5" fill="currentColor"/>
                             </svg>
                         </div>
-                        <p class="text-[11px] text-slate-500 font-medium">Pindai QR Code di loket pelayanan untuk check-in cepat</p>
+                        <p class="text-[11px] text-slate-500 font-medium">Tunjukkan lembar digital atau bukti cetak ini kepada petugas di loket pelayanan</p>
                     </div>
                 </div>
 
@@ -541,9 +561,9 @@
                 <div>
                     <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
                         <span class="h-3.5 w-3.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                        Portal Kendali & Rekap Data LPSE
+                        Portal Kendali & Rekap Data UKPBJ
                     </h2>
-                    <p class="text-xs text-slate-500 mt-1">Kelola dan analisis data pengunjung pelayanan LPSE secara transparan.</p>
+                    <p class="text-xs text-slate-500 mt-1">Kelola dan analisis data pengunjung pelayanan administrasi pengadaan secara transparan.</p>
                 </div>
                 <button onclick="handleAdminLogout()" class="flex items-center gap-2 py-2.5 px-4 bg-red-50 hover:bg-red-100 text-red-700 rounded-xl text-xs font-bold border border-red-200/50 transition-all">
                     <i data-lucide="log-out" class="w-4 h-4"></i>
@@ -717,7 +737,7 @@
                             </tr>
                         </thead>
                         <tbody id="admin-table-body" class="divide-y divide-slate-100 text-xs text-slate-700">
-                            <!-- JS Generated Rows Go Here -->
+                            <!-- JS Generated Rows -->
                             <tr>
                                 <td colspan="7" class="py-12 text-center text-slate-400 space-y-2">
                                     <div class="flex flex-col items-center justify-center">
@@ -743,7 +763,7 @@
                     <div class="flex items-center gap-2">
                         <i data-lucide="file-text" class="w-5 h-5 text-yellow-400"></i>
                         <div>
-                            <span id="modal-id" class="block font-black text-sm tracking-wide">LPSE-2026-0001</span>
+                            <span id="modal-id" class="block font-black text-sm tracking-wide">UKPBJ-2026-0001</span>
                             <span class="block text-[10px] text-blue-200">Detail Rekam Kunjungan</span>
                         </div>
                     </div>
@@ -868,7 +888,7 @@
                             <li>Ganti isi berkas `Code.gs` seluruhnya dengan kode terbaru di bawah ini:</li>
                         </ol>
                         
-                        <!-- Embedded Apps Script Code snippet (New Parameter-Based Implementation) -->
+                        <!-- Embedded Apps Script Code snippet -->
                         <div class="bg-slate-900 text-slate-200 p-3 rounded-xl font-mono text-[10px] overflow-x-auto select-all border border-slate-800">
 function doGet(e) {<br>
 &nbsp;&nbsp;return handleData(e);<br>
@@ -960,8 +980,10 @@ function handleData(e) {<br>
             <div class="flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
                 <div class="space-y-1">
                     <p class="text-sm font-extrabold text-white tracking-wider flex items-center justify-center sm:justify-start gap-1.5">
-                        <i data-lucide="building" class="w-4.5 h-4.5 text-blue-500"></i>
-                        LPSE KABUPATEN MUKOMUKO
+                        <img src="Logo_Mukomukokab.png" 
+                             alt="Logo" class="w-5 h-5 object-contain"
+                             onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/2/29/Lambang_Kabupaten_Mukomuko.png'">
+                        UKPBJ KABUPATEN MUKOMUKO
                     </p>
                     <p class="text-xs text-slate-500">Bagian Pengadaan Barang dan Jasa Sekretariat Daerah Kabupaten Mukomuko</p>
                 </div>
@@ -974,10 +996,10 @@ function handleData(e) {<br>
             </div>
             <hr class="border-slate-800/80">
             <div class="flex flex-col sm:flex-row justify-between items-center gap-2 text-[10.5px] text-slate-600">
-                <p>&copy; 2026 Layanan Pengadaan Secara Elektronik (LPSE) Mukomuko. All rights reserved.</p>
+                <p>&copy; 2026 Bagian Pengadaan Barang dan Jasa Sekretariat Daerah Kabupaten Mukomuko. All rights reserved.</p>
                 <div class="flex items-center gap-1.5">
                     <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                    <span>Sistem Pencatatan Publik Terenkripsi Lokal & Cloud</span>
+                    <span>Sistem Pencatatan Publik Terenkripsi Lokal & Cloud (Google Drive)</span>
                 </div>
             </div>
         </div>
@@ -1145,6 +1167,7 @@ function handleData(e) {<br>
             return true;
         }
 
+        // Validate Step 2 inputs
         function validateStep2() {
             const purposeRadio = document.querySelector('input[name="visitor_purpose"]:checked');
             const officer = document.getElementById('lpse_officer').value;
@@ -1213,7 +1236,7 @@ function handleData(e) {<br>
                 day: 'numeric'
             }) + ', ' + timestamp.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
 
-            const visitId = `LPSE-2026-${String(database.length + 1).padStart(4, '0')}`;
+            const visitId = `UKPBJ-2026-${String(database.length + 1).padStart(4, '0')}`;
 
             const newRecord = {
                 id: visitId,
@@ -1281,7 +1304,7 @@ function handleData(e) {<br>
             
             const opt = {
                 margin:       10,
-                filename:     `Tiket-Kunjungan-LPSE_${visitorName.replace(/\s+/g, '_')}.pdf`,
+                filename:     `Tiket-Kunjungan-UKPBJ-Mukomuko_${visitorName.replace(/\s+/g, '_')}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -1588,7 +1611,7 @@ function handleData(e) {<br>
             const dummyCompanies = ["CV. Mukomuko Raya", "PT. Maju Bersama Jaya", "Dinas Kesehatan Kab. Mukomuko", "Masyarakat Umum Mukomuko", "CV. Konstruksi Nusantara", "Kecamatan Kota Mukomuko"];
             const dummyCategories = ["Penyedia Jasa", "Internal Pemerintah", "Masyarakat Umum", "Lainnya"];
             const dummyPurposes = ["Konsultasi SPSE", "Pendampingan SiRUP", "Registrasi & Verifikasi", "Bidding Room & Internet", "Kendala Teknis (Troubleshoot)", "Keperluan Lainnya"];
-            const dummyOfficers = ["Agustiadi (Koordinator)", "Haini Samsi (Helpdesk SPSE)", "Adi Mulya (Asisten Teknis)", "Syafprizal (Verifikator Berkas)", "Petugas yang Ada (Siapa saja)"];
+            const dummyOfficers = ["Ir. EFFIH, ST. MT, IPP (Kepala UKPBJ)", "Dedy Kurniadi (Kasubbag UKPBJ)", "Adi Marta (JFPPBJ Ahli Madya)", "Maesa Ersa Jaya (JFPPBJ Ahli Muda)"];
             const dummyMethods = ["Tatap Muka", "Online / Jarak Jauh"];
             const dummyDescriptions = [
                 "Mengalami error sertifikat digital saat mau submit penawaran tender.",
@@ -1617,7 +1640,7 @@ function handleData(e) {<br>
                     day: 'numeric'
                 }) + ', ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
 
-                const visitId = `LPSE-2026-${String(database.length + 1).padStart(4, '0')}`;
+                const visitId = `UKPBJ-2026-${String(database.length + 1).padStart(4, '0')}`;
 
                 const dummyRecord = {
                     id: visitId,
@@ -1681,7 +1704,7 @@ function handleData(e) {<br>
             const encodedUri = "data:text/csv;charset=utf-8," + encodeURI(csv);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Rekap-E-Tamu_LPSE-Mukomuko_${new Date().toISOString().split('T')[0]}.csv`);
+            link.setAttribute("download", `Rekap-E-Tamu_UKPBJ-Mukomuko_${new Date().toISOString().split('T')[0]}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -1744,16 +1767,14 @@ function handleData(e) {<br>
             consoleBox.scrollTop = consoleBox.scrollHeight;
         }
 
-        // Mengirim sebuah single record baru ke Google Sheets via Google Webhook (Diperbaiki: menggunakan URL-encoded format)
+        // Mengirim sebuah single record baru ke Google Sheets via Google Webhook
         async function sendDataToGoogleSheets(webappUrl, record) {
             try {
-                // Memformat data tamu menjadi format URL Parameter (lebih disukai Apps Script & bypass pembatasan payload CORS)
                 const params = new URLSearchParams();
                 for (const key in record) {
                     params.append(key, record[key]);
                 }
 
-                // Kirim request POST menggunakan tipe application/x-www-form-urlencoded
                 await fetch(webappUrl, {
                     method: 'POST',
                     mode: 'no-cors', 
@@ -1816,7 +1837,7 @@ function handleData(e) {<br>
                     writeSyncLog(`Sukses mengirim data ${item.id}.`);
                 } catch (err) {
                     failCount++;
-                    writeSyncLog(`Gagal mengirim data ${item.id}: ${err.message}`, false);
+                    writeSyncLog("Gagal mengirim data " + item.id + ": " + err.message, false);
                 }
             }
 
