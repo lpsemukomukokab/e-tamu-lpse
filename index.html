@@ -1297,8 +1297,8 @@ function handleData(e) {<br>
             document.getElementById('section-guestbook').classList.remove('hidden');
         }
 
-    // Ekspor Bukti Pendaftaran PDF (Menggunakan html2pdf.js)
-   function downloadTicketPDF() {
+        // Ekspor Bukti Pendaftaran PDF (Menggunakan html2pdf.js)
+        function downloadTicketPDF() {
             const element = document.getElementById('receipt-pdf-content');
             const visitorName = document.getElementById('receipt-name').textContent;
             
@@ -1311,15 +1311,7 @@ function handleData(e) {<br>
             };
             
             html2pdf().set(opt).from(element).save();
-   }
-        
-        
-/* Hindari pemotongan halaman di tengah elemen penting jika tiket panjang */
-.pdf-avoid-break {
-    page-break-inside: avoid;
-    break-inside: avoid;
-}
-        
+        }
 
 
         // ================= ADMIN & LOGIN MANAGEMENT SYSTEM ================= -->
