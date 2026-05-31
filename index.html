@@ -1194,5 +1194,28 @@
             showCustomNotif("Ekspor Berhasil", "Berkas rekapitulasi data tamu format Excel (.xlsx) berhasil diunduh.", "success");
         }
     </script>
+<script type="text/javascript">
+    // Menonaktifkan klik kanan (contextmenu)
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+    });
+
+    // Menonaktifkan pintasan keyboard (F12, Ctrl+Shift+I, Ctrl+U)
+    document.onkeydown = function(e) {
+        if (event.keyCode == 123) { // F12
+            return false;
+        }
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { // Ctrl+Shift+I
+            return false;
+        }
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { // Ctrl+Shift+C
+            return false;
+        }
+        if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { // Ctrl+U
+            return false;
+        }
+    };
+    
+</script>
 </body>
 </html>
