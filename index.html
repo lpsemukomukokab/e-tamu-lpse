@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Tamu UKPBJ | Bagian Pengadaan Barang dan Jasa Sekretariat Daerah Kabupaten Mukomuko</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js for Admin Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- html2pdf.js for Ticket PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- SheetJS (XLSX) for Excel Export Module -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <!-- Firebase Compat SDKs (App & Realtime Database) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        /* Custom styled barcode visual representation */
+        .barcode-line {
+            display: inline-block;
+            height: 40px;
+            background-color: #0f172a;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-800">
+
+    <!-- Top Navigation Header with Kabupaten Mukomuko Logo -->
+    <header class="bg-gradient-to-r from-blue-900 to-indigo-950 text-white shadow-lg sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col lg:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-4 text-center sm:text-left">
+                <!-- Official Logo Kabupaten Mukomuko -->
+                <div class="bg-white p-1.5 rounded-xl border border-white/20 shadow-md shrink-0 flex items-center justify-center w-14 h-14">
+                    <img src="Logo_Mukomukokab.png" 
+                         alt="Logo Kabupaten Mukomuko" 
+                         class="w-full h-full object-contain"
+                         onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/5/52/Logo_Mukomuko.png'">
+                </div>
+                <div>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-center sm:justify-start gap-1 sm:gap-2">
+                        <span class="bg-yellow-400 text-blue-950 text-[10px] font-black px-2 py-0.5 rounded-md tracking-wider uppercase self-center sm:self-auto">E-TAMU UKPBJ</span>
+                        <h1 class="font-extrabold text-lg sm:text-xl tracking-tight leading-none">Bagian Pengadaan Barang dan Jasa</h1>
+                    </div>
+                    <p class="text-xs text-blue-200 mt-1 font-semibold tracking-wide">Sekretariat Daerah Kabupaten Mukomuko</p>
+                </div>
+            </div>
+            
+            <nav class="flex bg-blue-950/40 p-1.5 rounded-2xl border border-white/10 shadow-inner shrink-0">
+                <button id="tab-guestbook-btn" onclick="switchTab('guestbook')" class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 bg-white text-blue-900 shadow-md">
+                    <i data-lucide="book-open" class="w-4 h-4"></i>
+                    Buku Tamu
+                </button>
+                <button id="tab-admin-btn" onclick="switchTab('admin')" class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 text-blue-200 hover:text-white">
+                    <i data-lucide="lock" class="w-4 h-4"></i>
+                    Panel Pengelola
+                </button>
+            </nav>
+        </div>
+        <div class="bg-blue-950 py-1.5 text-center text-[11px] text-blue-200/80 tracking-wider font-semibold uppercase border-t border-blue-800/50">
+            Pencatatan Tamu Pelayanan UKPBJ • Kabupaten Mukomuko
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- ================= SECTION 1: BUKU TAMU (FORM MULTISTEP) ================= -->
+        <section id="section-guestbook" class="space-y-6">
+            <div id="guestbook-container" class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden max-w-4xl mx-auto transition-all duration-300 transform hover:shadow-2xl">
+                
+                <div class="bg-gradient-to-r from-blue-800 via-indigo-900 to-blue-800 p-6 sm:p-8 text-white relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+                        <i data-lucide="file-text" class="w-64 h-64"></i>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Formulir Kunjungan Layanan UKPBJ</h2>
+                    <p class="text-blue-100 text-sm mt-2 max-w-2xl leading-relaxed">Selamat datang di Bagian Pengadaan Barang dan Jasa Kabupaten Mukomuko. Mohon lengkapi formulir di bawah ini untuk membantu kami mencatatkan tujuan kedatangan Anda.</p>
+                </div>
+
+                <!-- Step Progress Header -->
+                <div class="bg-slate-50 border-b border-slate-100 px-6 sm:px-8 py-5">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider" id="step-label">Langkah 1 dari 3</span>
+                        <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full" id="step-percentage">33% Selesai</span>
+                    </div>
+                    <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                        <div id="step-progress-bar" class="bg-gradient-to-r from-blue-600 to-indigo-600 h-2.5 rounded-full transition-all duration-500 ease-out" style="width: 33.33%;"></div>
+                    </div>
+                    <div class="hidden sm:flex justify-between mt-4 text-xs font-semibold text-slate-400">
+                        <div class="flex items-center gap-1.5 text-blue-600 animate-pulse" id="step-text-1">
+                            <span class="w-5 h-5 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center text-[10px]">1</span>
+                            Identitas & Instansi
+                        </div>
+                        <div class="flex items-center gap-1.5" id="step-text-2">
+                            <span class="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center text-[10px]">2</span>
+                            Maksud & Tujuan
+                        </div>
+                        <div class="flex items-center gap-1.5" id="step-text-3">
+                            <span class="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center text-[10px]">3</span>
+                            Indeks Kepuasan (IKM)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Element -->
+                <form id="guestbook-form" class="p-6 sm:p-8 space-y-8" onsubmit="handleFormSubmit(event)">
+                    
+                    <!-- STEP 1: IDENTITAS DIRI & INSTANSI -->
+                    <div id="form-step-1" class="space-y-6">
+                        <div class="border-b border-slate-100 pb-4">
+                            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i data-lucide="user" class="text-blue-600 w-5 h-5"></i>
+                                Informasi Identitas & Afiliasi Tamu
+                            </h3>
+                            <p class="text-xs text-slate-500 mt-1">Isilah data diri Anda beserta instansi afiliasi dengan benar untuk kelancaran administrasi daerah.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-slate-700">Nama Lengkap Pengunjung <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i data-lucide="user" class="h-5 w-5 text-slate-400"></i>
+                                    </div>
+                                    <input type="text" id="visitor_name" required class="pl-10 block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all shadow-sm" placeholder="Masukkan nama lengkap Anda">
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-slate-700">Nomor WhatsApp Aktif <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i data-lucide="phone" class="h-5 w-5 text-slate-400"></i>
+                                    </div>
+                                    <input type="tel" id="visitor_whatsapp" required class="pl-10 block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all shadow-sm" placeholder="Contoh: 081234567890">
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-slate-700">Alamat Email <span class="text-xs text-slate-400">(Opsional)</span></label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i data-lucide="mail" class="h-5 w-5 text-slate-400"></i>
+                                    </div>
+                                    <input type="email" id="visitor_email" class="pl-10 block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all shadow-sm" placeholder="alamat@email.com">
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-slate-700">Kategori Pengunjung <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i data-lucide="users" class="h-5 w-5 text-slate-400"></i>
+                                    </div>
+                                    <select id="visitor_category" required class="pl-10 block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all shadow-sm appearance-none">
+                                        <option value="">-- Pilih Kategori --</option>
+                                        <option value="Penyedia Jasa">Penyedia Jasa (Pelaku Usaha/Vendor)</option>
+                                        <option value="Internal Pemerintah">Internal Pemerintah Daerah (OPD/Instansi/Lembaga)</option>
+                                        <option value="Masyarakat Umum">Masyarakat Umum</option>
+                                        <option value="Lainnya">Lainnya / Lain-lain</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i data-lucide="chevron-down" class="h-4 w-4 text-slate-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2 md:col-span-2">
+                                <label class="block text-sm font-semibold text-slate-700">Nama Instansi / Perusahaan / Lembaga <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i data-lucide="building-2" class="h-5 w-5 text-slate-400"></i>
+                                    </div>
+                                    <input type="text" id="visitor_company" required class="pl-10 block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all shadow-sm" placeholder="Contoh: CV. Berkah Makmur / Dinas Pekerjaan Umum">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: MAKSUD, TUJUAN & PETUGAS HELPDESK -->
+                    <div id="form-step-2" class="space-y-6 hidden">
+                        <div class="border-b border-slate-100 pb-4">
+                            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i data-lucide="help-circle" class="text-blue-600 w-5 h-5"></i>
+                                Maksud Kunjungan & Layanan UKPBJ
+                            </h3>
+                            <p class="text-xs text-slate-500 mt-1">Pilihlah tujuan yang sesuai agar kami dapat menghubungkan Anda dengan Pegawai/Personil yang dituju.</p>
+                        </div>
+
+                        <div class="space-y-3">
+                            <label class="block text-sm font-semibold text-slate-700">Tujuan Utama Kunjungan <span class="text-red-500">*</span></label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="tujuan-cards">
+                                <label class="border border-slate-200 hover:border-blue-500 rounded-xl p-4 flex items-start gap-3 cursor-pointer transition-all bg-white hover:bg-blue-50/20 shadow-sm relative">
+                                    <input type="radio" name="visitor_purpose" value="Konsultasi SPSE" required class="mt-1 h-4 w-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                                    <div>
+                                        <span class="block text-sm font-bold text-slate-800">Konsultasi SPSE</span>
+                                        <span class="block text-xs text-slate-500 mt-0.5">Pendampingan penggunaan sistem SPSE</span>
+                                    </div>
+                                </label>
+                                <label class="border border-slate-200 hover:border-blue-500 rounded-xl p-4 flex items-start gap-3 cursor-pointer transition-all bg-white hover:bg-blue-50/20 shadow-sm relative">
+                                    <input type="radio" name="visitor_purpose" value="Pendampingan SiRUP" class="mt-1 h-4 w-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                                    <div>
+                                        <span class="block text-sm font-bold text-slate-800">Pendampingan SiRUP</span>
+                                        <span class="block text-xs text-slate-500 mt-0.5">Asistensi penginputan Rencana Umum Pengadaan</span>
+                                    </div>
+                                </label>
+                                <label class="border border-slate-200 hover:border-blue-500 rounded-xl p-4 flex items-start gap-3 cursor-pointer transition-all bg-white hover:bg-blue-50/20 shadow-sm relative">
+                                    <input type="radio" name="visitor_purpose" value="Registrasi & Verifikasi" class="mt-1 h-4 w-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                                    <div>
+                                        <span class="block text-sm font-bold text-slate-800">Registrasi & Verifikasi</span>
+                                        <span class="block text-xs text-slate-500 mt-0.5">Pembuatan akun baru / verifikasi berkas fisik</span>
+                                    </div>
+                                </label>
+                                <label class="border border-slate-200 hover:border-blue-500 rounded-xl p-4 flex items-start gap-3 cursor-pointer transition-all bg-white hover:bg-blue-50/20 shadow-sm relative">
+                                    <input type="radio" name="visitor_purpose" value="Bidding Room & Internet" class="mt-1 h-4 w-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                                    <div>
+                                        <span class="block text-sm font-bold text-slate-800">Bidding Room & Internet</span>
+                                        <span class="block text-xs text-slate-500 mt-0.5">Memakai fasilitas komputer & ruang penawaran</span>
+                                    </div>
+                                </label>
+                                <label class="border border-slate-200 hover:border-blue-500 rounded-xl p-4 flex items-start gap-3 cursor-pointer transition-all bg-white hover:bg-blue-50/20 shadow-sm relative">
+                                    <input type="radio" name="visitor_purpose" value="Kendala Teknis (Troubleshoot)" class="mt-1 h-4 w-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                                    <div>
+                                        <span class="block text-sm font-bold text-slate-800">Kendala Teknis</span>
+                                        <span class="block text-xs text-slate-500 mt-0.5">Sertifikat digital, error sistem, troubleshoot</span>
+                                    </div>
+                                </label>
+                                <label class="border border-slate-200 hover:border-blue-500 rounded-xl p-4 flex items-start gap-3 cursor-pointer transition-all bg-white hover:bg-blue-50/20 shadow-sm relative">
+                                    <input type="radio" name="visitor_purpose" value="Keperluan Proses Pengadaan" class="mt-1 h-4 w-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                                    <div>
+                                        <span class="block text-sm font-bold text-slate-800">Proses Pengadaan</span>
+                                        <span class="block text-xs text-slate-500 mt-0.5">e-Tendering, Pengadaan Langsung, e-Katalog</span>
+                                    </div>
+                                </label>
+                                <label class="border border-slate-200 hover:border-blue-500 rounded-xl p-4 flex items-start gap-3 cursor-pointer transition-all bg-white hover:bg-blue-50/20 shadow-sm relative">
+                                    <input type="radio" name="visitor_purpose" value="Keperluan Lainnya" class="mt-1 h-4 w-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                                    <div>
+                                        <span class="block text-sm font-bold text-slate-800">Keperluan Lainnya</span>
+                                        <span class="block text-xs text-slate-500 mt-0.5">Maksud tujuan kedatangan di luar daftar pelayanan</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-slate-700">Detail Kendala / Deskripsi Informasi <span class="text-xs text-slate-400">(Opsional)</span></label>
+                            <textarea id="visitor_description" rows="3" class="block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all shadow-sm" placeholder="Bisa diisi jika memerlukan catatan khusus atau kronologi kendala..."></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-slate-700">Metode Pelayanan <span class="text-red-500">*</span></label>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <label class="border border-slate-300 rounded-xl py-3 px-4 flex items-center justify-center gap-2 cursor-pointer bg-white hover:bg-slate-50 transition-all">
+                                        <input type="radio" name="service_method" value="Tatap Muka" checked required class="h-4 w-4 text-blue-600 border-slate-300">
+                                        <span class="text-sm font-semibold text-slate-800">Tatap Muka</span>
+                                    </label>
+                                    <label class="border border-slate-300 rounded-xl py-3 px-4 flex items-center justify-center gap-2 cursor-pointer bg-white hover:bg-slate-50 transition-all">
+                                        <input type="radio" name="service_method" value="Online / Jarak Jauh" class="h-4 w-4 text-blue-600 border-slate-300">
+                                        <span class="text-sm font-semibold text-slate-800">Online</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-slate-700">Personil / Pegawai ASN UKPBJ <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i data-lucide="user-check" class="h-5 w-5 text-slate-400"></i>
+                                    </div>
+                                    <select id="ukpbj_officer" required class="pl-10 block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all shadow-sm appearance-none">
+                                        <option value="">-- Pilih Personil UKPBJ --</option>
+                                        <option value="Ir. Effih, ST. MT, IPP (Kepala UKPBJ)">Ir. Effih, ST. MT, IPP (Kepala UKPBJ)</option>
+                                        <option value="Dedy Kurniadi,.S.A.P (Kasubbag UKPBJ)">Dedy Kurniadi,.S.A.P (Kasubbag UKPBJ)</option>
+                                        <option value="Agustiadi,.S.A.P (Koordinator LPSE)">Agustiadi,.S.A.P (Koordinator LPSE)</option>
+                                        <option value="Syafprizal (Pengelola Layanan LPSE)">Syafprizal (Pengelola Layanan LPSE)</option>
+                                        <option value="Adi Marta,.S.Pi (JFPPBJ UKPBJ)">Adi Marta,.S.Pi (JFPPBJ UKPBJ)</option>
+                                        <option value="Maesa Ersa Jaya,.S.T.P (JFPPBJ UKPBJ)">Maesa Ersa Jaya,.S.T.P (JFPPBJ UKPBJ)</option>
+                                        <option value="Zaenudin,.S.Kep (JFPPBJ UKPBJ)">Zaenudin,.S.Kep (JFPPBJ UKPBJ)</option>
+                                        <option value="Fahrizal,.S.Kom (JFPPBJ UKPBJ)">Fahrizal,.S.Kom (JFPPBJ UKPBJ)</option>
+                                        <option value="Vani Saputra,.S.E (JFPPBJ UKPBJ)">Vani Saputra,.S.E (JFPPBJ UKPBJ)</option>
+                                        <option value="Penius,.S.E (JFPPBJ UKPBJ)">Penius,.S.E (JFPPBJ UKPBJ)</option>
+                                        <option value="Petugas Lainya / Yang Ada">Petugas Lainya / Yang Ada</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i data-lucide="chevron-down" class="h-4 w-4 text-slate-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: PENILAIAN KEPUASAN (IKM) -->
+                    <div id="form-step-3" class="space-y-6 hidden">
+                        <div class="border-b border-slate-100 pb-4">
+                            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i data-lucide="heart" class="text-blue-600 w-5 h-5"></i>
+                                Penilaian Mutu Pelayanan UKPBJ (IKM)
+                            </h3>
+                            <p class="text-xs text-slate-500 mt-1">Umpan balik Anda sangat berharga untuk mengevaluasi reformasi birokrasi dan meningkatkan kualitas pelayanan kami.</p>
+                        </div>
+
+                        <div class="space-y-4 text-center py-6 bg-slate-50 rounded-2xl border border-slate-100">
+                            <p class="text-sm font-bold text-slate-700">Seberapa Puas Anda dengan Pelayanan Petugas UKPBJ Hari Ini? <span class="text-red-500">*</span></p>
+                            
+                            <div class="flex flex-wrap justify-center items-center gap-4 sm:gap-6 px-4">
+                                <label class="group flex flex-col items-center gap-2 cursor-pointer select-none">
+                                    <input type="radio" name="ikm_rating" value="1" required class="sr-only peer">
+                                    <span class="text-4xl filter grayscale group-hover:grayscale-0 peer-checked:grayscale-0 peer-checked:scale-125 transform transition duration-300">😞</span>
+                                    <span class="text-xs font-bold text-slate-400 group-hover:text-slate-700 peer-checked:text-red-600 transition">Sangat Kecewa</span>
+                                </label>
+                                <label class="group flex flex-col items-center gap-2 cursor-pointer select-none">
+                                    <input type="radio" name="ikm_rating" value="2" class="sr-only peer">
+                                    <span class="text-4xl filter grayscale group-hover:grayscale-0 peer-checked:grayscale-0 peer-checked:scale-125 transform transition duration-300">😐</span>
+                                    <span class="text-xs font-bold text-slate-400 group-hover:text-slate-700 peer-checked:text-amber-600 transition">Kurang Puas</span>
+                                </label>
+                                <label class="group flex flex-col items-center gap-2 cursor-pointer select-none">
+                                    <input type="radio" name="ikm_rating" value="3" class="sr-only peer">
+                                    <span class="text-4xl filter grayscale group-hover:grayscale-0 peer-checked:grayscale-0 peer-checked:scale-125 transform transition duration-300">🙂</span>
+                                    <span class="text-xs font-bold text-slate-400 group-hover:text-slate-700 peer-checked:text-yellow-600 transition">Biasa Saja</span>
+                                </label>
+                                <label class="group flex flex-col items-center gap-2 cursor-pointer select-none">
+                                    <input type="radio" name="ikm_rating" value="4" class="sr-only peer">
+                                    <span class="text-4xl filter grayscale group-hover:grayscale-0 peer-checked:grayscale-0 peer-checked:scale-125 transform transition duration-300">😊</span>
+                                    <span class="text-xs font-bold text-slate-400 group-hover:text-slate-700 peer-checked:text-emerald-500 transition">Puas</span>
+                                </label>
+                                <label class="group flex flex-col items-center gap-2 cursor-pointer select-none">
+                                    <input type="radio" name="ikm_rating" value="5" class="sr-only peer">
+                                    <span class="text-4xl filter grayscale group-hover:grayscale-0 peer-checked:grayscale-0 peer-checked:scale-125 transform transition duration-300">🤩</span>
+                                    <span class="text-xs font-bold text-slate-400 group-hover:text-slate-700 peer-checked:text-blue-600 transition">Sangat Puas</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-slate-700">Kritik, Saran, atau Masukan untuk UKPBJ <span class="text-xs text-slate-400">(Opsional)</span></label>
+                            <textarea id="visitor_feedback" rows="3" class="block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all shadow-sm" placeholder="Tuliskan saran untuk perbaikan kualitas layanan kami..."></textarea>
+                        </div>
+
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex items-start gap-3">
+                            <input type="checkbox" id="disclaimer_agree" required class="mt-1 h-4.5 w-4.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer">
+                            <label for="disclaimer_agree" class="text-xs text-slate-600 leading-relaxed cursor-pointer select-none">
+                                Saya menyatakan bahwa seluruh informasi di atas diisi dengan jujur, benar, dan sah demi kelancaran pendaftaran kunjungan pada Bagian Pengadaan Barang dan Jasa Kabupaten Mukomuko.
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- STEP NAVIGATION BUTTONS -->
+                    <div class="flex justify-between items-center border-t border-slate-100 pt-6">
+                        <button type="button" id="prev-step-btn" onclick="prevStep()" class="hidden px-5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition">
+                            Kembali
+                        </button>
+                        <div class="ml-auto">
+                            <button type="button" id="next-step-btn" onclick="nextStep()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition shadow-md flex items-center gap-2">
+                                Selanjutnya
+                                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                            </button>
+                            <button type="submit" id="submit-form-btn" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition shadow-md flex items-center gap-2">
+                                Kirim Formulir
+                                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 2: PANEL PENGELOLA (ADMIN) ================= -->
+        <section id="section-admin" class="space-y-6 hidden">
+            
+            <!-- ADMIN LOGIN CONTAINER (SHOWN WHEN NOT LOGGED IN) -->
+            <div id="admin-login-wrapper" class="max-w-md mx-auto bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden mt-8 transition-all duration-300">
+                <div class="bg-gradient-to-r from-blue-900 to-indigo-950 p-6 text-white text-center relative">
+                    <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+                        <i data-lucide="lock" class="w-40 h-40"></i>
+                    </div>
+                    <div class="mx-auto bg-white/10 w-16 h-16 rounded-full flex items-center justify-center mb-3">
+                        <i data-lucide="shield-check" class="w-8 h-8 text-yellow-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold tracking-tight">Otentikasi Pengelola</h3>
+                    <p class="text-xs text-blue-200 mt-1">Silakan masuk untuk mengakses dashboard data</p>
+                </div>
+                <form id="admin-login-form" class="p-6 space-y-4" onsubmit="handleAdminLogin(event)">
+                    <div class="space-y-1">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Pengguna (Username)</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-lucide="user" class="h-4 w-4 text-slate-400"></i>
+                            </div>
+                            <input type="text" id="admin_username" required class="pl-9 block w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition shadow-sm" placeholder="Username">
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Kata Sandi (Password)</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-lucide="lock" class="h-4 w-4 text-slate-400"></i>
+                            </div>
+                            <input type="password" id="admin_password" required class="pl-9 pr-10 block w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition shadow-sm" placeholder="Password">
+                            <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600">
+                                <i id="eye-icon" data-lucide="eye" class="h-4 w-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2">
+                        <i data-lucide="log-in" class="w-4 h-4"></i> Masuk Sistem
+                    </button>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-center text-[10px] text-slate-400 font-medium">
+                        Info Akses: <span class="font-bold text-slate-600"></span> lpsemukomukokab@gmail.com <span class="font-bold text-slate-600"></span>
+                    </div>
+                </form>
+            </div>
+
+            <!-- ADMIN DASHBOARD WRAPPER (SHOWN ONLY WHEN LOGGED IN) -->
+            <div id="admin-dashboard-content" class="space-y-6 hidden">
+                
+                <!-- Welcome Admin Header & Logout -->
+                <div class="flex flex-col sm:flex-row justify-between items-center bg-white p-4 rounded-2xl border border-slate-100 shadow-sm gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="flex bg-slate-100 p-1 rounded-xl">
+                            <button onclick="switchAdminSubTab('dashboard')" id="admin-subtab-dashboard" class="px-4 py-1.5 rounded-lg text-[11px] font-bold transition-all bg-white text-blue-600 shadow-sm">
+                                DASHBOARD
+                            </button>
+                            <button onclick="switchAdminSubTab('users')" id="admin-subtab-users" class="px-4 py-1.5 rounded-lg text-[11px] font-bold transition-all text-slate-500 hover:text-slate-700">
+                                KELOLA PENGGUNA
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="bg-emerald-100 p-2 rounded-xl text-emerald-600">
+                            <i data-lucide="user-check" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-800 leading-none">Administrator UKPBJ</h3>
+                            <p class="text-[11px] text-slate-400 mt-1">Sesi Aktif • Sekretariat Daerah Kabupaten Mukomuko</p>
+                        </div>
+                    </div>
+                    <button onclick="handleAdminLogout()" class="px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                        <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                        Keluar Panel (Logout)
+                    </button>
+                </div>
+
+                <!-- SUB-SECTION: DASHBOARD STATS & CHARTS -->
+                <div id="admin-sub-dashboard" class="space-y-6">
+                    <!-- Stats summary cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <!-- Stat 1 -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
+                        <div class="bg-blue-50 p-3 rounded-xl text-blue-600"><i data-lucide="users" class="w-6 h-6"></i></div>
+                        <div>
+                            <p class="text-xs font-semibold text-slate-400 uppercase">Total Kunjungan</p>
+                            <h4 class="text-2xl font-black text-slate-800" id="stat-total-tamu">0</h4>
+                        </div>
+                    </div>
+                    <!-- Stat 2 -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
+                        <div class="bg-emerald-50 p-3 rounded-xl text-emerald-600"><i data-lucide="star" class="w-6 h-6"></i></div>
+                        <div>
+                            <p class="text-xs font-semibold text-slate-400 uppercase">Rata-rata IKM</p>
+                            <h4 class="text-2xl font-black text-slate-800" id="stat-avg-rating">0.0 / 5</h4>
+                        </div>
+                    </div>
+                    <!-- Stat 3 -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
+                        <div class="bg-amber-50 p-3 rounded-xl text-amber-600"><i data-lucide="monitor" class="w-6 h-6"></i></div>
+                        <div>
+                            <p class="text-xs font-semibold text-slate-400 uppercase">Metode Tatap Muka</p>
+                            <h4 class="text-2xl font-black text-slate-800" id="stat-tatap-muka">0</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                        <h3 class="text-sm font-bold text-slate-700 mb-4 uppercase tracking-wider">Grafik Kategori Pengunjung</h3>
+                        <div class="relative h-64 flex justify-center">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                        <h3 class="text-sm font-bold text-slate-700 mb-4 uppercase tracking-wider">Tujuan Utama Kunjungan</h3>
+                        <div class="relative h-64 flex justify-center">
+                            <canvas id="purposeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Real-time Data Log Table -->
+                <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 bg-slate-50">
+                        <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                            <i data-lucide="database" class="text-indigo-600 w-5 h-5"></i> Log Riwayat Kunjungan Tamu (Real-time)
+                        </h3>
+                        
+                        <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                            <!-- Excel Export Module Button -->
+                            <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition shadow-md flex items-center gap-2 w-full sm:w-auto justify-center">
+                                <i data-lucide="download-cloud" class="w-4 h-4"></i>
+                                Ekspor Excel (.xlsx)
+                            </button>
+                            
+                            <!-- Search filter -->
+                            <div class="relative w-full sm:w-64">
+                                <input type="text" id="search-input" onkeyup="filterTable()" class="pl-9 pr-4 py-2 block w-full rounded-xl border border-slate-300 bg-white text-xs text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all shadow-sm" placeholder="Cari nama / perusahaan...">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i data-lucide="search" class="h-4 w-4 text-slate-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-600 text-xs font-bold uppercase border-b border-slate-200">
+                                    <th class="p-4 whitespace-nowrap">Tanggal & Waktu</th>
+                                    <th class="p-4 whitespace-nowrap">Nama Tamu</th>
+                                    <th class="p-4 whitespace-nowrap">WhatsApp</th>
+                                    <th class="p-4 whitespace-nowrap">Instansi</th>
+                                    <th class="p-4 whitespace-nowrap">Tujuan</th>
+                                    <th class="p-4 whitespace-nowrap">Petugas</th>
+                                    <th class="p-4 text-center whitespace-nowrap">IKM</th>
+                                </tr>
+                            </thead>
+                            <tbody id="visitor-table-body" class="text-sm divide-y divide-slate-100 text-slate-700">
+                                <tr>
+                                    <td colspan="7" class="p-8 text-center text-slate-400 font-medium">Memuat koneksi database realtime...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                </div>
+
+                <!-- SUB-SECTION: USER MANAGEMENT -->
+                <div id="admin-sub-users" class="space-y-6 hidden">
+                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                        <div class="p-5 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 bg-slate-50">
+                            <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                                <i data-lucide="users" class="text-indigo-600 w-5 h-5"></i> Daftar Pengguna Sistem
+                            </h3>
+                            <button onclick="showAddUserModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition shadow-md flex items-center gap-2">
+                                <i data-lucide="user-plus" class="w-4 h-4"></i>
+                                Tambah Pengguna Baru
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-100 text-slate-600 text-xs font-bold uppercase border-b border-slate-200">
+                                        <th class="p-4">Username</th>
+                                        <th class="p-4">Nama Lengkap</th>
+                                        <th class="p-4">Role</th>
+                                        <th class="p-4 text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="user-table-body" class="text-sm divide-y divide-slate-100 text-slate-700">
+                                    <tr>
+                                        <td colspan="4" class="p-8 text-center text-slate-400">Memuat data pengguna...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= MODAL SUCCESS & VISIT TICKET PRINTING ================= -->
+    <div id="modal-ticket" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-100 transform scale-95 transition-all max-h-[90vh] overflow-y-auto custom-scrollbar">
+            
+            <!-- Success Messages Header -->
+            <div class="text-center space-y-3 mb-6">
+                <div class="mx-auto p-3 rounded-full bg-emerald-50 text-emerald-600 w-16 h-16 flex items-center justify-center shadow-inner">
+                    <i data-lucide="check-circle" class="w-10 h-10 animate-bounce"></i>
+                </div>
+                <h3 class="text-2xl font-extrabold text-slate-900 tracking-tight" id="ticket-success-title">Pendaftaran Kunjungan Berhasil!</h3>
+                <p class="text-xs text-slate-500 leading-relaxed max-w-md mx-auto">
+                    Terima kasih telah mengisi formulir kunjungan digital kami. Data Anda telah aman direkam ke dalam basis data Bagian Pengadaan Barang dan Jasa (UKPBJ) Kabupaten Mukomuko dan tiket antrian Anda dicetak otomatis.
+                </p>
+            </div>
+
+            <!-- Printable Ticket Container -->
+            <div class="border-2 border-dashed border-slate-200 rounded-2xl p-5 bg-slate-50 relative overflow-hidden" id="ticket-print-area">
+                <!-- Ticket Header Decorative Elements -->
+                <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-4">
+                    <div class="flex items-center gap-3">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/52/Logo_Mukomuko.png" 
+                             alt="Kabupaten Mukomuko" 
+                             class="w-10 h-10 object-contain"
+                             onerror="this.onerror=null; this.src='https://placehold.co/100x100/ffffff/1e3a8a?text=UKPBJ'">
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-900 uppercase leading-none tracking-tight">KABUPATEN MUKOMUKO</h4>
+                            <p class="text-[9px] font-bold text-indigo-700 uppercase leading-none mt-1">BUKTI KUNJUNGAN UKPBJ</p>
+                            <p class="text-[8px] text-slate-400 mt-0.5">Sistem Pencatatan Digital E-Tamu</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[8px] font-black tracking-widest text-slate-400 block">KODE REG</span>
+                        <span class="text-[10px] font-mono font-bold text-slate-800" id="ticket-reg-code">REG-2026-0000</span>
+                    </div>
+                </div>
+
+                <!-- Main Queue Number Area -->
+                <div class="text-center py-4 bg-white rounded-xl border border-slate-100 shadow-inner mb-4 relative">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">NOMOR ANTRIAN KUNJUNGAN</p>
+                    <h2 class="text-4xl font-black text-indigo-950 my-1" id="ticket-queue-number">A-00</h2>
+                    <p class="text-[9px] text-slate-500 font-semibold" id="ticket-date">30 Mei 2026, 16:00 WIB</p>
+                </div>
+
+                <!-- Ticket Data Fields -->
+                <div class="space-y-2.5 text-xs">
+                    <div class="flex justify-between border-b border-slate-100 pb-1.5">
+                        <span class="text-slate-400 font-medium">Nama Tamu</span>
+                        <span class="text-slate-900 font-bold" id="ticket-name">-</span>
+                    </div>
+                    <div class="flex justify-between border-b border-slate-100 pb-1.5">
+                        <span class="text-slate-400 font-medium">No. WhatsApp</span>
+                        <span class="text-slate-900 font-semibold" id="ticket-whatsapp">-</span>
+                    </div>
+                    <div class="flex justify-between border-b border-slate-100 pb-1.5">
+                        <span class="text-slate-400 font-medium">Instansi/Lembaga</span>
+                        <span class="text-slate-900 font-bold text-right" id="ticket-company">-</span>
+                    </div>
+                    <div class="flex justify-between border-b border-slate-100 pb-1.5">
+                        <span class="text-slate-400 font-medium">Tujuan Layanan</span>
+                        <span class="text-indigo-900 font-bold" id="ticket-purpose">-</span>
+                    </div>
+                    <div class="flex justify-between border-b border-slate-100 pb-1.5">
+                        <span class="text-slate-400 font-medium">Petugas Dituju</span>
+                        <span class="text-slate-900 font-semibold text-right" id="ticket-officer">-</span>
+                    </div>
+                </div>
+
+                <!-- Authenticity Barcode Visual Representation -->
+                <div class="mt-5 pt-4 border-t border-slate-200 flex flex-col items-center justify-center space-y-1">
+                    <div class="flex gap-0.5 justify-center overflow-hidden w-full max-w-xs opacity-75">
+                        <!-- Render elegant barcodes with varying widths -->
+                        <span class="barcode-line w-1"></span>
+                        <span class="barcode-line w-2"></span>
+                        <span class="barcode-line w-1"></span>
+                        <span class="barcode-line w-3"></span>
+                        <span class="barcode-line w-1"></span>
+                        <span class="barcode-line w-2"></span>
+                        <span class="barcode-line w-1"></span>
+                        <span class="barcode-line w-4"></span>
+                        <span class="barcode-line w-1"></span>
+                        <span class="barcode-line w-3"></span>
+                        <span class="barcode-line w-1"></span>
+                        <span class="barcode-line w-2"></span>
+                        <span class="barcode-line w-1"></span>
+                        <span class="barcode-line w-1"></span>
+                        <span class="barcode-line w-2"></span>
+                        <span class="barcode-line w-3"></span>
+                        <span class="barcode-line w-1"></span>
+                        <span class="barcode-line w-4"></span>
+                        <span class="barcode-line w-1"></span>
+                    </div>
+                    <span class="text-[8px] font-mono text-slate-400 tracking-widest mt-1">E-TAMU UKPBJ MUKOMUKO</span>
+                </div>
+            </div>
+
+            <!-- Ticket Action Controls -->
+            <div class="grid grid-cols-2 gap-3 mt-6">
+                <button type="button" onclick="downloadTicketPDF()" class="py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    Unduh PDF
+                </button>
+                <button type="button" onclick="printTicket()" class="py-3 px-4 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2">
+                    <i data-lucide="printer" class="w-4 h-4"></i>
+                    Cetak Ulang
+                </button>
+            </div>
+
+            <button type="button" onclick="closeTicketModal()" class="w-full mt-3 py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition uppercase tracking-wider">
+                Tutup & Formulir Baru
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal: Add/Edit User -->
+    <div id="modal-user" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-100 transform scale-95 transition-all">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-extrabold text-slate-900" id="user-modal-title">Tambah Pengguna</h3>
+                <button onclick="closeUserModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <form id="user-form" class="space-y-4" onsubmit="handleUserSubmit(event)">
+                <input type="hidden" id="edit-user-id">
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Username</label>
+                    <input type="text" id="user_username" required class="block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition shadow-sm">
+                </div>
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Lengkap</label>
+                    <input type="text" id="user_fullname" required class="block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition shadow-sm">
+                </div>
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Password</label>
+                    <div class="relative">
+                        <input type="password" id="user_password" class="block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition shadow-sm" placeholder="Isi untuk ganti password">
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-1" id="pass-hint">* Kosongkan jika tidak ingin mengubah password saat edit</p>
+                </div>
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Role</label>
+                    <select id="user_role" required class="block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition shadow-sm appearance-none">
+                        <option value="admin">Administrator</option>
+                        <option value="operator">Operator</option>
+                    </select>
+                </div>
+                <div class="pt-4 flex gap-3">
+                    <button type="button" onclick="closeUserModal()" class="flex-1 py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-sm transition">Batal</button>
+                    <button type="submit" class="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm transition shadow-md">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Alert Notification (Anti-alert blocker compliant) -->
+    <div id="modal-notif" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform scale-95 transition-all">
+            <div class="flex flex-col items-center text-center space-y-4">
+                <div class="p-3 rounded-full" id="modal-icon-bg">
+                    <i id="modal-icon" class="w-10 h-10"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900" id="modal-title">Notifikasi</h3>
+                <p class="text-sm text-slate-500" id="modal-message">Pesan...</p>
+                <button type="button" onclick="closeModal()" class="w-full py-2.5 px-4 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-sm transition">
+                    Mengerti
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Area -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-6 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p class="font-bold text-slate-300">Bagian Pengadaan Barang dan Jasa Sekretariat Daerah Kabupaten Mukomuko</p>
+            <p>&copy; 2026 E-Tamu UKPBJ. All Rights Reserved. copyright | agoestiadi.</p>
+        </div>
+    </footer>
+
+    <!-- ================= JAVASCRIPT APPLICATION LOGIC ================= -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Cek status login saat pertama kali dimuat
+        window.onload = function() {
+            loadSystemUsers(); // Selalu load users agar login bisa divalidasi
+            if (isAdminLoggedIn && currentAdminUser) {
+                // UI update akan ditangani saat switchTab admin dipanggil
+            }
+        };
+
+        // KONFIGURASI SINKRONISASI GOOGLE SHEETS
+        const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxPzyqUcncFMaSYrM0B4JaBnogaY21thOLnAQUvUTdulFklqgJc20Np4ojYQ1l7Vzle4w/exec";
+
+        // 1. FIREBASE CONFIGURATION & INITIALIZATION
+        const firebaseConfig = {
+            databaseURL: "https://e-tamu-ukpbj-default-rtdb.asia-southeast1.firebasedatabase.app/"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // 2. STATE MANAGEMENT FOR SECURITY & FORMS
+        let currentStep = 1;
+        let isAdminLoggedIn = sessionStorage.getItem('isAdminLoggedIn') === 'true';
+        let currentAdminUser = JSON.parse(sessionStorage.getItem('currentAdminUser')) || null;
+        let systemUsers = []; // List pengguna sistem dari Firebase
+
+        function updateStepUI() {
+            document.getElementById('form-step-1').classList.add('hidden');
+            document.getElementById('form-step-2').classList.add('hidden');
+            document.getElementById('form-step-3').classList.add('hidden');
+
+            document.getElementById(`form-step-${currentStep}`).classList.remove('hidden');
+
+            const stepLabels = ["Identitas & Instansi", "Maksud & Tujuan", "Indeks Kepuasan (IKM)"];
+            document.getElementById('step-label').innerText = `Langkah ${currentStep} dari 3: ${stepLabels[currentStep-1]}`;
+            
+            const progressPercentage = Math.round((currentStep / 3) * 100);
+            document.getElementById('step-percentage').innerText = `${progressPercentage}% Selesai`;
+            document.getElementById('step-progress-bar').style.width = `${progressPercentage}%`;
+
+            for (let i = 1; i <= 3; i++) {
+                const textElem = document.getElementById(`step-text-${i}`);
+                if (i === currentStep) {
+                    textElem.className = "flex items-center gap-1.5 text-blue-600 animate-pulse font-bold";
+                } else if (i < currentStep) {
+                    textElem.className = "flex items-center gap-1.5 text-emerald-600 font-semibold";
+                } else {
+                    textElem.className = "flex items-center gap-1.5 text-slate-400";
+                }
+            }
+
+            if (currentStep === 1) {
+                document.getElementById('prev-step-btn').classList.add('hidden');
+                document.getElementById('next-step-btn').classList.remove('hidden');
+                document.getElementById('submit-form-btn').classList.add('hidden');
+            } else if (currentStep === 2) {
+                document.getElementById('prev-step-btn').classList.remove('hidden');
+                document.getElementById('next-step-btn').classList.remove('hidden');
+                document.getElementById('submit-form-btn').classList.add('hidden');
+            } else if (currentStep === 3) {
+                document.getElementById('prev-step-btn').classList.remove('hidden');
+                document.getElementById('next-step-btn').classList.add('hidden');
+                document.getElementById('submit-form-btn').classList.remove('hidden');
+            }
+        }
+
+        function validateStepFields() {
+            if (currentStep === 1) {
+                return document.getElementById('visitor_name').value.trim() !== "" && 
+                       document.getElementById('visitor_whatsapp').value.trim() !== "" && 
+                       document.getElementById('visitor_category').value !== "" && 
+                       document.getElementById('visitor_company').value.trim() !== "";
+            } else if (currentStep === 2) {
+                const purposeChecked = document.querySelector('input[name="visitor_purpose"]:checked');
+                return purposeChecked !== null && document.getElementById('ukpbj_officer').value !== "";
+            }
+            return true;
+        }
+
+        function nextStep() {
+            if (validateStepFields()) {
+                if (currentStep < 3) {
+                    currentStep++;
+                    updateStepUI();
+                }
+            } else {
+                showCustomNotif("Kelengkapan Formulir", "Mohon lengkapi semua bidang isian wajib bertanda bintang (*) sebelum melanjutkan.", "warning");
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStepUI();
+            }
+        }
+
+        // 3. ADMIN SECURITY CONTROLLERS
+        // Fungsi pembantu untuk hashing SHA-256
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function handleAdminLogin(event) {
+            event.preventDefault();
+            const u = document.getElementById('admin_username').value.trim();
+            const p = document.getElementById('admin_password').value.trim();
+            const hashedPass = await sha256(p);
+            console.log("Login attempt:", u, "Hash:", hashedPass);
+
+            // Master admin credentials
+            const masterUsername = 'admin';
+            const masterHash = "a5af94246eda57bc6acdd63d78af68ec79f13f33a54c1d8044de8ce119484c20"; // 
+
+            let userMatch = null;
+
+            // 1. Check Master Admin first
+            if (u === masterUsername && hashedPass === masterHash) {
+                userMatch = {
+                    username: 'admin',
+                    fullname: 'Administrator Utama',
+                    role: 'admin'
+                };
+            } 
+            // 2. Check Database Users
+            else if (systemUsers.length > 0) {
+                userMatch = systemUsers.find(user => user.username === u && user.password === hashedPass);
+            }
+
+            if (userMatch) {
+                isAdminLoggedIn = true;
+                currentAdminUser = userMatch;
+                sessionStorage.setItem('isAdminLoggedIn', 'true');
+                sessionStorage.setItem('currentAdminUser', JSON.stringify(userMatch));
+                
+                document.getElementById('admin-login-wrapper').classList.add('hidden');
+                document.getElementById('admin-dashboard-content').classList.remove('hidden');
+                document.getElementById('admin-login-form').reset();
+
+                showCustomNotif("Akses Diterima", `Selamat datang, ${userMatch.fullname}. Sesi Anda aktif.`, "success");
+                loadSystemUsers(); // Load users from DB
+
+                if (visitorGlobalList.length > 0) {
+                    updateAnalyticsAndCharts(visitorGlobalList);
+                }
+            } else {
+                showCustomNotif("Akses Ditolak", "Username atau Password tidak valid.", "error");
+            }
+        }
+
+        function handleAdminLogout() {
+            isAdminLoggedIn = false;
+            currentAdminUser = null;
+            sessionStorage.removeItem('isAdminLoggedIn');
+            sessionStorage.removeItem('currentAdminUser');
+            document.getElementById('admin-login-wrapper').classList.remove('hidden');
+            document.getElementById('admin-dashboard-content').classList.add('hidden');
+            showCustomNotif("Sesi Selesai", "Anda telah keluar dari Panel Pengelola dengan aman.", "success");
+        }
+
+        // --- USER MANAGEMENT LOGIC ---
+        function switchAdminSubTab(sub) {
+            const dashBtn = document.getElementById('admin-subtab-dashboard');
+            const userBtn = document.getElementById('admin-subtab-users');
+            const dashSec = document.getElementById('admin-sub-dashboard');
+            const userSec = document.getElementById('admin-sub-users');
+
+            if (sub === 'dashboard') {
+                dashBtn.className = "px-4 py-1.5 rounded-lg text-[11px] font-bold transition-all bg-white text-blue-600 shadow-sm";
+                userBtn.className = "px-4 py-1.5 rounded-lg text-[11px] font-bold transition-all text-slate-500 hover:text-slate-700";
+                dashSec.classList.remove('hidden');
+                userSec.classList.add('hidden');
+            } else {
+                // Cek hak akses: Hanya role 'admin' yang bisa buka tab ini
+                if (currentAdminUser && currentAdminUser.role !== 'admin') {
+                    showCustomNotif("Akses Terbatas", "Hanya Administrator Utama yang dapat mengelola pengguna.", "warning");
+                    return;
+                }
+                userBtn.className = "px-4 py-1.5 rounded-lg text-[11px] font-bold transition-all bg-white text-blue-600 shadow-sm";
+                dashBtn.className = "px-4 py-1.5 rounded-lg text-[11px] font-bold transition-all text-slate-500 hover:text-slate-700";
+                userSec.classList.remove('hidden');
+                dashSec.classList.add('hidden');
+                loadSystemUsers();
+            }
+        }
+
+        function loadSystemUsers() {
+            const userRef = db.ref('system_users');
+            // Gunakan 'once' untuk inisialisasi awal agar data siap saat login
+            userRef.once('value').then((snapshot) => {
+                const data = snapshot.val();
+                systemUsers = [];
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        const u = data[key];
+                        u.id = key;
+                        systemUsers.push(u);
+                    });
+                }
+            });
+
+            // Tetap gunakan 'on' untuk update UI real-time di tabel
+            userRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                systemUsers = [];
+                const tbody = document.getElementById('user-table-body');
+                tbody.innerHTML = '';
+
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        const u = data[key];
+                        u.id = key;
+                        systemUsers.push(u);
+                        
+                        const row = `
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="p-4 font-bold text-slate-900">${u.username}</td>
+                                <td class="p-4 text-slate-600">${u.fullname}</td>
+                                <td class="p-4">
+                                    <span class="px-2 py-1 rounded-full text-[10px] font-bold uppercase ${u.role === 'admin' ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-600'}">
+                                        ${u.role}
+                                    </span>
+                                </td>
+                                <td class="p-4 text-center">
+                                    <div class="flex justify-center gap-2">
+                                        <button onclick="editUser('${u.id}')" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                                        <button onclick="deleteUser('${u.id}')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                        tbody.insertAdjacentHTML('beforeend', row);
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-slate-400">Belum ada pengguna tambahan.</td></tr>';
+                }
+                lucide.createIcons();
+            });
+        }
+
+        function showAddUserModal() {
+            document.getElementById('user-modal-title').innerText = "Tambah Pengguna";
+            document.getElementById('user-form').reset();
+            document.getElementById('edit-user-id').value = '';
+            document.getElementById('user_password').required = true;
+            document.getElementById('pass-hint').classList.add('hidden');
+            document.getElementById('modal-user').classList.remove('hidden');
+        }
+
+        function closeUserModal() {
+            document.getElementById('modal-user').classList.add('hidden');
+        }
+
+        function editUser(id) {
+            const user = systemUsers.find(u => u.id === id);
+            if (!user) return;
+
+            document.getElementById('user-modal-title').innerText = "Edit Pengguna";
+            document.getElementById('edit-user-id').value = id;
+            document.getElementById('user_username').value = user.username;
+            document.getElementById('user_fullname').value = user.fullname;
+            document.getElementById('user_role').value = user.role;
+            document.getElementById('user_password').required = false;
+            document.getElementById('user_password').value = '';
+            document.getElementById('pass-hint').classList.remove('hidden');
+            document.getElementById('modal-user').classList.remove('hidden');
+        }
+
+        async function handleUserSubmit(event) {
+            event.preventDefault();
+            const id = document.getElementById('edit-user-id').value;
+            const username = document.getElementById('user_username').value.trim();
+            const fullname = document.getElementById('user_fullname').value.trim();
+            const password = document.getElementById('user_password').value;
+            const role = document.getElementById('user_role').value;
+
+            const userData = {
+                username: username,
+                fullname: fullname,
+                role: role
+            };
+
+            if (password) {
+                userData.password = await sha256(password);
+            }
+
+            if (id) {
+                // Update
+                db.ref('system_users/' + id).update(userData)
+                    .then(() => {
+                        showCustomNotif("Berhasil", "Data pengguna telah diperbarui.", "success");
+                        closeUserModal();
+                    });
+            } else {
+                // Create
+                db.ref('system_users').push(userData)
+                    .then(() => {
+                        showCustomNotif("Berhasil", "Pengguna baru telah ditambahkan.", "success");
+                        closeUserModal();
+                    });
+            }
+        }
+
+        function deleteUser(id) {
+            if (confirm("Apakah Anda yakin ingin menghapus pengguna ini?")) {
+                db.ref('system_users/' + id).remove()
+                    .then(() => {
+                        showCustomNotif("Terhapus", "Pengguna telah dihapus dari sistem.", "success");
+                    });
+            }
+        }
+
+        function togglePasswordVisibility() {
+            const passInput = document.getElementById('admin_password');
+            const eyeIcon = document.getElementById('eye-icon');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                eyeIcon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                passInput.type = 'password';
+                eyeIcon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
+
+        // 4. TAB NAVIGATION SWITCHER
+        function switchTab(tab) {
+            const guestbookBtn = document.getElementById('tab-guestbook-btn');
+            const adminBtn = document.getElementById('tab-admin-btn');
+            const guestbookSec = document.getElementById('section-guestbook');
+            const adminSec = document.getElementById('section-admin');
+
+            if (tab === 'guestbook') {
+                guestbookBtn.className = "flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 bg-white text-blue-900 shadow-md";
+                adminBtn.className = "flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 text-blue-200 hover:text-white";
+                guestbookSec.classList.remove('hidden');
+                adminSec.classList.add('hidden');
+            } else {
+                adminBtn.className = "flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 bg-white text-blue-900 shadow-md";
+                guestbookBtn.className = "flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 text-blue-200 hover:text-white";
+                adminSec.classList.remove('hidden');
+                guestbookSec.classList.add('hidden');
+
+                // If logged in, automatically show contents and load metrics
+                if (isAdminLoggedIn) {
+                    document.getElementById('admin-login-wrapper').classList.add('hidden');
+                    document.getElementById('admin-dashboard-content').classList.remove('hidden');
+                    if (visitorGlobalList.length > 0) {
+                        updateAnalyticsAndCharts(visitorGlobalList);
+                    }
+                } else {
+                    document.getElementById('admin-login-wrapper').classList.remove('hidden');
+                    document.getElementById('admin-dashboard-content').classList.add('hidden');
+                }
+            }
+        }
+
+        // 5. MODAL SYSTEM CONTROLLER
+        function showCustomNotif(title, msg, type = "success") {
+            const modal = document.getElementById('modal-notif');
+            const mTitle = document.getElementById('modal-title');
+            const mMessage = document.getElementById('modal-message');
+            const mIcon = document.getElementById('modal-icon');
+            const mIconBg = document.getElementById('modal-icon-bg');
+
+            mTitle.innerText = title;
+            mMessage.innerText = msg;
+
+            if (type === "success") {
+                mIconBg.className = "p-3 rounded-full bg-emerald-50 text-emerald-600";
+                mIcon.setAttribute("data-lucide", "check-circle");
+            } else if (type === "warning") {
+                mIconBg.className = "p-3 rounded-full bg-amber-50 text-amber-500";
+                mIcon.setAttribute("data-lucide", "alert-triangle");
+            } else {
+                mIconBg.className = "p-3 rounded-full bg-red-50 text-red-600";
+                mIcon.setAttribute("data-lucide", "x-circle");
+            }
+
+            lucide.createIcons();
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-notif').classList.add('hidden');
+        }
+
+        // 6. FIREBASE SUBMISSION & TICKET GENERATION
+        
+        // Fungsi sinkronisasi ke Google Sheets
+        function syncToGoogleSheets(data) {
+            fetch(GOOGLE_APPS_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                cache: 'no-cache',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).catch(err => console.error("Gagal sinkronisasi Google Sheets:", err));
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            const ratingOption = document.querySelector('input[name="ikm_rating"]:checked');
+            const agreement = document.getElementById('disclaimer_agree').checked;
+
+            if (!ratingOption) {
+                showCustomNotif("Indeks Kepuasan", "Silakan pilih salah satu opsi emoticon untuk Indeks Kepuasan Pelayanan.", "warning");
+                return;
+            }
+
+            if (!agreement) {
+                showCustomNotif("Persetujuan", "Anda wajib mencentang pernyataan keabsahan data untuk dapat mengirimkan formulir.", "warning");
+                return;
+            }
+
+            const timestampNow = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+            
+            const guestData = {
+                timestamp: timestampNow,
+                name: document.getElementById('visitor_name').value.trim(),
+                whatsapp: document.getElementById('visitor_whatsapp').value.trim(),
+                email: document.getElementById('visitor_email').value.trim() || "-",
+                category: document.getElementById('visitor_category').value,
+                company: document.getElementById('visitor_company').value.trim(),
+                purpose: document.querySelector('input[name="visitor_purpose"]:checked').value,
+                description: document.getElementById('visitor_description').value.trim() || "-",
+                service_method: document.querySelector('input[name="service_method"]:checked').value,
+                officer: document.getElementById('ukpbj_officer').value,
+                ikm_rating: parseInt(ratingOption.value),
+                feedback: document.getElementById('visitor_feedback').value.trim() || "-"
+            };
+
+            // Get total visitors length to estimate queue numbers dynamically from DB
+            db.ref('visitors').once('value')
+                .then((snap) => {
+                    const queueNumber = (snap.exists() ? snap.numChildren() : 0) + 1;
+                    const paddedQueue = "A-" + String(queueNumber).padStart(2, '0');
+                    const paddedCode = "REG-2026-" + String(queueNumber).padStart(4, '0');
+
+                    // Push visitor registration to RTDB
+                    db.ref('visitors').push(guestData)
+                        .then(() => {
+                            // Sinkronisasi otomatis ke Google Sheets
+                            syncToGoogleSheets(guestData);
+
+                            // Populate visitor details to print preview ticket
+                            document.getElementById('ticket-reg-code').innerText = paddedCode;
+                            document.getElementById('ticket-queue-number').innerText = paddedQueue;
+                            document.getElementById('ticket-date').innerText = timestampNow;
+                            document.getElementById('ticket-name').innerText = guestData.name;
+                            document.getElementById('ticket-whatsapp').innerText = guestData.whatsapp;
+                            document.getElementById('ticket-company').innerText = guestData.company;
+                            document.getElementById('ticket-purpose').innerText = guestData.purpose;
+                            document.getElementById('ticket-officer').innerText = guestData.officer;
+
+                            // Display Modal Ticket print preview
+                            document.getElementById('modal-ticket').classList.remove('hidden');
+                            lucide.createIcons();
+
+                            // =======================================================
+                            // CETAK OTOMATIS SAAT TAMU DAPAT NOMOR ANTRIAN
+                            // =======================================================
+                            printTicket();
+
+                            // Reset form guestbook back to initial steps
+                            document.getElementById('guestbook-form').reset();
+                            currentStep = 1;
+                            updateStepUI();
+                        })
+                        .catch((error) => {
+                            console.error("Firebase database error: ", error);
+                            showCustomNotif("Koneksi Gagal", "Gagal menyimpan pendaftaran ke server cloud. Mohon periksa kembali jaringan internet Anda.", "error");
+                        });
+                });
+        }
+
+        // Close ticket modal
+        function closeTicketModal() {
+            document.getElementById('modal-ticket').classList.add('hidden');
+        }
+
+        // Helper: bangun HTML tiket dari data DOM (dipakai oleh PDF & Print)
+        function buildTicketHTML() {
+            const regCode   = document.getElementById('ticket-reg-code').innerText;
+            const queue     = document.getElementById('ticket-queue-number').innerText;
+            const date      = document.getElementById('ticket-date').innerText;
+            const name      = document.getElementById('ticket-name').innerText;
+            const wa        = document.getElementById('ticket-whatsapp').innerText;
+            const company   = document.getElementById('ticket-company').innerText;
+            const purpose   = document.getElementById('ticket-purpose').innerText;
+            const officer   = document.getElementById('ticket-officer').innerText;
+
+            return `
+            <div style="
+                width:380px; padding:20px; background:#f8fafc;
+                border:2px dashed #cbd5e1; border-radius:12px;
+                font-family:'Segoe UI',Arial,sans-serif; color:#1e293b;
+                box-sizing:border-box;
+            ">
+                <!-- Header -->
+                <div style="display:flex;justify-content:space-between;align-items:center;
+                            border-bottom:1px solid #e2e8f0;padding-bottom:12px;margin-bottom:12px;">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/52/Logo_Mukomuko.png"
+                             style="width:36px;height:36px;object-fit:contain;"
+                             onerror="this.src='https://placehold.co/36x36/1e3a8a/ffffff?text=M'">
+                        <div>
+                            <div style="font-size:9px;font-weight:800;text-transform:uppercase;
+                                        letter-spacing:0.05em;color:#0f172a;">KABUPATEN MUKOMUKO</div>
+                            <div style="font-size:8px;font-weight:700;color:#4338ca;
+                                        text-transform:uppercase;margin-top:2px;">BUKTI KUNJUNGAN UKPBJ</div>
+                            <div style="font-size:7px;color:#94a3b8;margin-top:1px;">Sistem Pencatatan Digital E-Tamu</div>
+                        </div>
+                    </div>
+                    <div style="text-align:right;">
+                        <span style="font-size:7px;font-weight:900;letter-spacing:0.1em;
+                                     color:#94a3b8;display:block;">KODE REG</span>
+                        <span style="font-size:9px;font-family:monospace;font-weight:700;
+                                     color:#1e293b;">${regCode}</span>
+                    </div>
+                </div>
+
+                <!-- Antrian -->
+                <div style="text-align:center;background:white;border-radius:10px;
+                            border:1px solid #f1f5f9;padding:14px 10px;margin-bottom:12px;
+                            box-shadow:inset 0 1px 3px rgba(0,0,0,0.06);">
+                    <div style="font-size:8px;font-weight:700;color:#94a3b8;
+                                text-transform:uppercase;letter-spacing:0.12em;">NOMOR ANTRIAN KUNJUNGAN</div>
+                    <div style="font-size:44px;font-weight:900;color:#1e1b4b;
+                                line-height:1.1;margin:4px 0;">${queue}</div>
+                    <div style="font-size:8px;color:#64748b;font-weight:600;">${date}</div>
+                </div>
+
+                <!-- Data Fields -->
+                <div style="font-size:10px;">
+                    ${[
+                        ['Nama Tamu',       name,    '#0f172a'],
+                        ['No. WhatsApp',    wa,      '#0f172a'],
+                        ['Instansi/Lembaga',company, '#0f172a'],
+                        ['Tujuan Layanan',  purpose, '#312e81'],
+                        ['Petugas Dituju',  officer, '#0f172a'],
+                    ].map(([label, val, color]) => `
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;
+                                    border-bottom:1px solid #f1f5f9;padding:5px 0;gap:8px;">
+                            <span style="color:#94a3b8;font-weight:500;white-space:nowrap;">${label}</span>
+                            <span style="color:${color};font-weight:700;text-align:right;">${val}</span>
+                        </div>`).join('')}
+                </div>
+
+                <!-- Barcode -->
+                <div style="margin-top:14px;padding-top:12px;border-top:1px solid #e2e8f0;text-align:center;">
+                    <div style="display:flex;gap:2px;justify-content:center;margin-bottom:4px;">
+                        ${[3,6,3,9,3,6,3,12,3,9,3,6,3,3,6,9,3,12,3]
+                            .map(w=>`<span style="display:inline-block;width:${w}px;height:36px;background:#0f172a;"></span>`)
+                            .join('')}
+                    </div>
+                    <span style="font-size:7px;font-family:monospace;color:#94a3b8;letter-spacing:0.15em;">
+                        E-TAMU UKPBJ MUKOMUKO
+                    </span>
+                </div>
+            </div>`;
+        }
+
+        // Download ticket as PDF — render dari HTML string, bukan dari elemen DOM modal
+        function downloadTicketPDF() {
+            const ticketHTML = buildTicketHTML();
+
+            // Buat container sementara di luar layar
+            const container = document.createElement('div');
+            container.style.cssText = 'position:fixed;top:-9999px;left:0;z-index:-1;background:white;';
+            container.innerHTML = ticketHTML;
+            document.body.appendChild(container);
+
+            const opt = {
+                margin:      [5, 5, 5, 5],
+                filename:    `Bukti_Kunjungan_UKPBJ_${Date.now()}.pdf`,
+                image:       { type: 'jpeg', quality: 0.98 },
+                html2canvas: {
+                    scale: 2.5,
+                    useCORS: true,
+                    allowTaint: true,
+                    scrollX: 0,
+                    scrollY: 0,
+                    logging: false,
+                    backgroundColor: '#f8fafc'
+                },
+                jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' }
+            };
+
+            html2pdf()
+                .set(opt)
+                .from(container.firstElementChild)
+                .save()
+                .finally(() => document.body.removeChild(container));
+        }
+
+        // Print ticket — Menggunakan hidden iframe agar tidak terblokir oleh pop-up blocker browser saat dicetak otomatis (asinkron)
+        function printTicket() {
+            const ticketHTML = buildTicketHTML();
+            
+            // Cari atau buat iframe tersembunyi
+            let iframe = document.getElementById('print-iframe');
+            if (!iframe) {
+                iframe = document.createElement('iframe');
+                iframe.id = 'print-iframe';
+                // Sembunyikan iframe dari tampilan layar utama
+                iframe.style.position = 'fixed';
+                iframe.style.right = '0';
+                iframe.style.bottom = '0';
+                iframe.style.width = '0';
+                iframe.style.height = '0';
+                iframe.style.border = '0';
+                document.body.appendChild(iframe);
+            }
+            
+            const pri = iframe.contentWindow || iframe.contentDocument;
+            pri.document.open();
+            pri.document.write(`<!DOCTYPE html>
+<html lang="id"><head>
+<meta charset="UTF-8">
+<title>Bukti Kunjungan UKPBJ Mukomuko</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: white; display: flex; justify-content: center; padding: 16px; }
+  @page { size: A5 portrait; margin: 8mm; }
+  @media print { body { padding: 0; } }
+</style>
+</head>
+<body>
+  ${ticketHTML}
+  <script>
+    // Memicu dialog cetak otomatis sesaat setelah konten dimuat
+    window.onload = function() { 
+        setTimeout(function(){ 
+            window.print(); 
+        }, 300); 
+    };
+  <\/script>
+</body></html>`);
+            pri.document.close();
+        }
+
+        // 7. REAL-TIME DATA LISTENER & CHARTS HANDLING
+        let visitorGlobalList = [];
+        let categoryChartInstance = null;
+        let purposeChartInstance = null;
+
+        db.ref('visitors').on('value', (snapshot) => {
+            const tableBody = document.getElementById('visitor-table-body');
+            tableBody.innerHTML = '';
+
+            if (!snapshot.exists()) {
+                tableBody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400">Belum ada riwayat kunjungan tamu hari ini.</td></tr>`;
+                updateAnalyticsAndCharts([]);
+                return;
+            }
+
+            const data = snapshot.val();
+            const visitorList = [];
+
+            Object.keys(data).forEach(key => {
+                visitorList.unshift(data[key]);
+            });
+
+            visitorGlobalList = visitorList;
+
+            visitorList.forEach(visitor => {
+                const ratingIcons = '⭐️'.repeat(visitor.ikm_rating);
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/80 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-4 font-semibold text-slate-500 whitespace-nowrap text-xs">${visitor.timestamp}</td>
+                    <td class="p-4 font-bold text-slate-900">${visitor.name}</td>
+                    <td class="p-4 font-mono text-xs text-blue-600">${visitor.whatsapp}</td>
+                    <td class="p-4 text-slate-600">
+                        <div class="font-medium">${visitor.company}</div>
+                        <span class="text-[9px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-500 font-bold tracking-wide">${visitor.category}</span>
+                    </td>
+                    <td class="p-4 text-slate-800">
+                        <div class="font-bold">${visitor.purpose}</div>
+                        <p class="text-[11px] text-slate-400 italic">${visitor.description}</p>
+                    </td>
+                    <td class="p-4 text-xs text-slate-600 font-medium">${visitor.officer}</td>
+                    <td class="p-4 text-center whitespace-nowrap">${ratingIcons} <span class="text-xs text-slate-400 font-bold">(${visitor.ikm_rating})</span></td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            if (isAdminLoggedIn) {
+                updateAnalyticsAndCharts(visitorList);
+            }
+        });
+
+        function updateAnalyticsAndCharts(visitors) {
+            const total = visitors.length;
+            document.getElementById('stat-total-tamu').innerText = total;
+
+            if (total === 0) return;
+
+            let sumRating = 0;
+            let tatapMukaCount = 0;
+            
+            const categoriesMap = {};
+            const purposeMap = {};
+
+            visitors.forEach(v => {
+                sumRating += v.ikm_rating;
+                if (v.service_method === 'Tatap Muka') tatapMukaCount++;
+
+                categoriesMap[v.category] = (categoriesMap[v.category] || 0) + 1;
+                purposeMap[v.purpose] = (purposeMap[v.purpose] || 0) + 1;
+            });
+
+            const avgRating = (sumRating / total).toFixed(1);
+            document.getElementById('stat-avg-rating').innerText = `${avgRating} / 5.0`;
+            document.getElementById('stat-tatap-muka').innerText = tatapMukaCount;
+
+            // Render Chart 1: Kategori
+            const catLabels = Object.keys(categoriesMap);
+            const catData = Object.values(categoriesMap);
+
+            if (categoryChartInstance) categoryChartInstance.destroy();
+            const ctxCat = document.getElementById('categoryChart').getContext('2d');
+            categoryChartInstance = new Chart(ctxCat, {
+                type: 'doughnut',
+                data: {
+                    labels: catLabels,
+                    datasets: [{
+                        data: catData,
+                        backgroundColor: ['#1e3a8a', '#10b981', '#f59e0b', '#ef4444', '#6366f1'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }
+                    }
+                }
+            });
+
+            // Render Chart 2: Tujuan
+            const purposeLabels = Object.keys(purposeMap);
+            const purposeData = Object.values(purposeMap);
+
+            if (purposeChartInstance) purposeChartInstance.destroy();
+            const ctxPur = document.getElementById('purposeChart').getContext('2d');
+            purposeChartInstance = new Chart(ctxPur, {
+                type: 'bar',
+                data: {
+                    labels: purposeLabels,
+                    datasets: [{
+                        label: 'Frekuensi Kunjungan',
+                        data: purposeData,
+                        backgroundColor: '#4f46e5',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // 8. REAL-TIME SEARCH FILTER
+        function filterTable() {
+            const input = document.getElementById('search-input');
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById('visitor-table-body');
+            const trs = table.getElementsByTagName('tr');
+
+            for (let i = 0; i < trs.length; i++) {
+                const tdName = trs[i].getElementsByTagName('td')[1];
+                const tdCompany = trs[i].getElementsByTagName('td')[3];
+                if (tdName || tdCompany) {
+                    const txtValueName = tdName.textContent || tdName.innerText;
+                    const txtValueCompany = tdCompany.textContent || tdCompany.innerText;
+                    if (txtValueName.toLowerCase().indexOf(filter) > -1 || txtValueCompany.toLowerCase().indexOf(filter) > -1) {
+                        trs[i].style.display = "";
+                    } else {
+                        trs[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        // 9. EXPORT DATA TO EXCEL MODULE (xlsx sheet)
+        function exportToExcel() {
+            if (visitorGlobalList.length === 0) {
+                showCustomNotif("Ekspor Gagal", "Tidak ada data riwayat kunjungan tamu untuk diekspor ke format Excel.", "warning");
+                return;
+            }
+
+            // Map data into formatted Indonesian Excel headers
+            const excelRows = visitorGlobalList.map((visitor, idx) => ({
+                "No.": idx + 1,
+                "Tanggal & Waktu": visitor.timestamp,
+                "Nama Pengunjung": visitor.name,
+                "No. WhatsApp": visitor.whatsapp,
+                "Alamat Email": visitor.email,
+                "Kategori Tamu": visitor.category,
+                "Instansi / Lembaga / Perusahaan": visitor.company,
+                "Tujuan Utama Kunjungan": visitor.purpose,
+                "Detail Kendala / Keterangan": visitor.description,
+                "Metode Layanan": visitor.service_method,
+                "Petugas Yang Dituju": visitor.officer,
+                "Skor IKM (Kepuasan)": visitor.ikm_rating,
+                "Kritik & Saran": visitor.feedback || "-"
+            }));
+
+            // Convert mapping array to worksheet
+            const worksheet = XLSX.utils.json_to_sheet(excelRows);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Data_Kunjungan_E-Tamu");
+
+            // Auto fit column widths calculation
+            const colWidths = [];
+            excelRows.forEach(row => {
+                Object.keys(row).forEach((key, colIdx) => {
+                    const valueStr = String(row[key] || '');
+                    const currentWidth = valueStr.length;
+                    if (!colWidths[colIdx] || currentWidth > colWidths[colIdx]) {
+                        colWidths[colIdx] = currentWidth;
+                    }
+                });
+            });
+            worksheet['!cols'] = colWidths.map(w => ({ wch: w + 4 }));
+
+            // Save and download the XLSX spreadsheet file
+            const dateStr = new Date().toISOString().slice(0, 10);
+            XLSX.writeFile(workbook, `Rekap_E-Tamu_UKPBJ_Mukomuko_${dateStr}.xlsx`);
+            
+            showCustomNotif("Ekspor Berhasil", "Berkas rekapitulasi data tamu format Excel (.xlsx) berhasil diunduh.", "success");
+        }
+    </script>
+</body>
+</html>
